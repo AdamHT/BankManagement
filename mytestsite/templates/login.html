@@ -1,0 +1,6 @@
+<form action="/login/" method="post">
+  {% csrf_token %}
+Username: {{ login_form.username }}
+Password: {{ login_form.password }}
+  <input type="submit" value="Submit">
+</form>

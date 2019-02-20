@@ -1,0 +1,8 @@
+{% load static %}
+<"static/ewhfeh>
+<form action="/input/" method="post">
+  {% csrf_token %}
+  {{ form.input_str.label }}
+  {{ form.input_str }}
+  <input type="submit" value="Submit">
+</form>
