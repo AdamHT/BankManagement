@@ -1,0 +1,77 @@
+<!--
+This document provides the basic html elements
+for the home/login screen of a banking website.
+-->
+ 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>COLEMaN Billing</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="BankApp.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+<body class="bankBackground">
+
+  <!--Header section-->
+  <div class="bankHeader">
+    <p class="bankHeaderTopText">
+      Coleman Banking
+    <br>
+    </p>
+    <p class="bankHeaderBottomText">
+      Providing Commercial Online Ledgering, Electronic Management, and Notebooking
+      <br>
+	  <br>
+    </p>
+  </div>
+
+
+  <!--Button column-->
+  <div class="row">
+    <div class="col-sm-2" style="background-color:#C0C0C0">
+	  <form action="BankAccounts.html">
+        <input type="submit" value="Accounts" class="bankButton"/>
+      </form>
+	  <form action="BankTransfer.html">
+        <input type="submit" value="Fund Transfer" class="bankButton"/>
+      </form>
+	  <form action="BankBillings.html">
+        <input type="submit" value="Billing Information" class="bankButton"/>
+      </form>
+	  <form action="COLEMaNBankLogin.html">
+        <input type="submit" value="Logout" class="bankButton"/>
+      </form>
+	</div>
+    <div class="col-sm-10" style="background-color:#FFFFFF; height:100%">
+	  Bill fields go here
+	  <br><br>
+	  We can try pagination (looks nice, but => more clicks for user)
+	   <ul class="pagination">
+         <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+         <li class="page-item"><a class="page-link" href="#">1</a></li>
+         <li class="page-item"><a class="page-link" href="#">2</a></li>
+         <li class="page-item"><a class="page-link" href="#">3</a></li>
+         <li class="page-item"><a class="page-link" href="#">Next</a></li>
+       </ul> 
+	  <br><br><br>
+	  Or we can just throw them on the screen (simple scrolling)
+	  <textarea readonly class="billText">
+	  Bill Field 1: QWERTY
+	  Bill Field 2: MNBVCX
+	  Bill Field 3: Some Numbers
+	  </textarea>
+	  <br>
+	  <textarea readonly class="accountText">Demo Account2                    $XXX XX                         Checking</textarea>
+	  <br>
+	  <textarea readonly class="accountText">Demo Account3                    $X XXX XX                        Savings</textarea>
+	  As this column gets populated the page background is eclipsed by the columns style
+	</div>
+  </div> 
+</body>
+
+</html> 

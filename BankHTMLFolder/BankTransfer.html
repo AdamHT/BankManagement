@@ -1,0 +1,62 @@
+<!--
+This document provides the basic html elements
+for the home/login screen of a banking website.
+-->
+ 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>COLEMaN Transfer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="BankApp.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+<body class="bankBackground">
+
+  <!--Header section-->
+  <div class="bankHeader">
+    <p class="bankHeaderTopText">
+      Coleman Banking
+    <br>
+    </p>
+    <p class="bankHeaderBottomText">
+      Providing Commercial Online Ledgering, Electronic Management, and Notebooking
+      <br>
+	  <br>
+    </p>
+  </div>
+  
+  
+  <div class="row">
+    <!--Button section-->
+    <div class="col-sm-2" style="background-color:#C0C0C0">
+	  <form action="BankAccounts.html">
+        <input type="submit" value="Accounts" class="bankButton"/>
+      </form>
+	  <form action="BankTransfer.html">
+        <input type="submit" value="Fund Transfer" class="bankButton"/>
+      </form>
+	  <form action="BankBillings.html">
+        <input type="submit" value="Billing Information" class="bankButton"/>
+      </form>
+	  <form action="COLEMaNBankLogin.html">
+        <input type="submit" value="Logout" class="bankButton"/>
+      </form>
+	</div>
+	
+	<!--Fund transfer UI-->
+    <div class="col-sm-10" style="background-color:#FFFFFF; height:100%">
+	  Transfer fields go here
+	  <br><br><br>
+	  I was thinking drop down boxes for accounts and input field for amount
+	  <br><br><br>
+	  As this column gets populated the page background is eclipsed by the columns style
+	</div>
+  </div> 
+</body>
+
+</html> 

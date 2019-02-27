@@ -1,0 +1,65 @@
+<!--
+This document provides the basic html elements
+for the home/login screen of a banking website.
+-->
+ 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>COLEMaN Home</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="BankApp.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+<!--Start of page content-->
+
+<body class="bankBackground">
+  <!--Header Section-->
+  <div class="bankHeader">
+    <p class="bankHeaderTopText">
+      Coleman Banking
+    <br>
+    </p>
+    <p class="bankHeaderBottomText">
+      Providing Commercial Online Ledgering, Electronic Management, and Notebooking
+      <br>
+	  <br>
+    </p>
+  </div>
+  
+  <!--Login screen in left column-->
+  <div class="row">
+    <div class="col-sm-2" style="background-color:#D0D0D0">
+	  <p>User Login</p>
+	  <div class="form-group">
+        <input class="form-control" placeholder="username">
+      </div>
+	  <div class="form-group">
+        <input type="password" class="form-control" id="pwd" placeholder="password">
+	  </div>
+	  <form action="BankAccounts.html">
+        <input type="submit" value="Login" class="bankButton"/>
+      </form>
+	  <br>
+	</div>
+	
+	<!--Content to be displayed to the right-->
+    <div class="col-sm-10" style="background-color:#FFFFFF; height:100%">
+	  
+	  
+	  
+	  <!--Reminder text- to be deleted-->
+	  Filler info will go into this column
+	  <br><br><br>
+	  As this column gets populated the page background is eclipsed by the columns style
+	  <br>
+	  By delivery this background will be unicolor
+	</div>
+  </div> 
+</body>
+
+</html> 

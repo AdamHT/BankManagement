@@ -1,0 +1,1 @@
+Billings header was not updated from h1 to div with a p element in this version. This has been fixed on the hard copy
