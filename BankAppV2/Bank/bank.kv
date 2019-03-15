@@ -1,0 +1,231 @@
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+#:import utils kivy.utils
+
+<FlatButton@ButtonBehavior+Label>:
+    text: 'default'
+
+ScreenManagement:
+    id: sm
+    LoginScreen:
+    AdminScreen:
+
+<LoginScreen>:
+    name: "login_screen"
+    id: login_page
+    orientation: "vertical"
+    spacing: 10
+    space_x: self.size[0]/3
+
+    BoxLayout:
+        orientation: "vertical"
+        #spacing: 20
+        padding: login_page.space_x, 10
+        canvas.before:
+            Color:
+                rgba: (0.761,0.761,0.761,1)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            text: "Financial Way"
+            font_size: 90
+            font_name: "DejaVuSans"
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 10
+            size_hint_y: None
+            height: 100
+            Spinner:
+                id: account_type
+                text: 'Account Type'
+                values: ('Admin', 'Teller')
+                background_color: 0.2, 0.2, 0.8, 1
+            TextInput:
+                id: username
+                multiline: False
+                write_tab: False
+                hint_text: "Username"
+            TextInput:
+                id: password
+                password: True # hide password
+                multiline: False
+                write_tab: False
+                hint_text: "Password"
+        Label:
+            id: sp
+            size_hint_y: None
+            height: 40
+        Button:
+            text: "Sign In"
+            size_hint_y: None
+            height: 40
+            on_release: root.verify_credentials()
+
+        Label:
+            id: sp2
+
+
+
+<AdminScreen>:
+    name: "admin_screen"
+
+    BoxLayout:
+        id: main_win
+        orientation: 'vertical'
+        canvas.before:
+            Color:
+                rgba: (.91,.91,.91,1)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+            
+        BoxLayout:
+            id: top_nav
+            size_hint_y: None
+            height: 30
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex('#062f4f')
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
+            
+            Label:
+                text: 'Bank Dashboard'
+                bold: True
+                size_hint: (.9, None)
+                height: 30
+                padding: 3,3
+            FlatButton:
+                id: file_trigger
+                text: 'Logout'
+                #text: 'File'
+                #on_release: file_dropdown.open(self)
+                size_hint: (.1, None)
+                on_release: root.logout()
+                height: 30
+                canvas.before:
+                    Color:
+                        rgb: utils.get_color_from_hex('#031424')
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                #Widget:
+                    #on_parent: file_dropdown.dismiss()
+                    #DropDown:
+                     #   id: file_dropdown
+                        #Button:
+                            #id: close
+                            #text: 'quit'
+                            #size_hint_y: None
+                            #on_press: root.logout()
+                            #height: 30
+        BoxLayout:
+            id: content_nav
+
+            BoxLayout:
+                id: nav_tabs
+                size_hint_x: .2
+                orientation: 'vertical'
+                spacing: 5
+                canvas.before:
+                    Color:
+                        rgb: utils.get_color_from_hex('#062f4f')
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                ToggleButton:
+                    id: user_toggle
+                    text: 'Manage Users'
+                    size_hint_y: .1
+                    state: 'down'
+                    background_color: (0.024, 0.184, 0.31,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                ToggleButton:
+                    id: products_toggle
+                    text: 'Manage Accounts'
+                    size_hint_y: .1
+                    background_color: (0.024, 0.184, 0.31,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                ToggleButton:
+                    id: analysis_toggle
+                    text: 'Other Tab'
+                    size_hint_y: .1
+                    background_color: (0.024, 0.184, 0.31,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                Label:
+                    id: sp
+                    text: ''
+                    size_hint_y: .7
+            BoxLayout:
+                id: all_content
+                size_hint_x: .8
+                padding: 20,10
+                ScreenManager:
+                    id: screen_manager
+                    Screen:
+                        id: screen_content
+                        name: 'screen_content'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            spacing: 10
+                            #BoxLayout:
+                                #id: scrn_contents
+                            Label:
+                                text: 'List headers here'
+                                spacing: 10
+                                size_hint_y: None
+                                height: 35
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.6,0.6,0.6,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                            Label:
+                                text: 'List here'
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.70,0.70,0.70,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                            # BoxLayout:
+                            #     id: ops_fields
+                            #     spacing: 10
+                            #     size_hint_y: None
+                            #     height: 35
+                            BoxLayout:
+                                id: ops_btns
+                                spacing: 10
+                                size_hint_y: None
+                                height: 45
+                                Button:
+                                    id: crud_add
+                                    text: 'Add User'
+                                    #on_release: root.add_user_fields()
+                                    on_press: root.logout()
+                                Button:
+                                    id: crud_update
+                                    text: 'Update User'
+                                Button:
+                                    id: crud_remove
+                                    text: 'Remove User'
+                    Screen:
+                        id: screen_content_one
+                        name: 'screen_content_one'
+                        Label:
+                            text: "screen TWO"
+                    Screen:
+                        id: screen_content_two
+                        name: 'screen_content_two'
+                        Label:
+                            text: "screen THREE"
+
