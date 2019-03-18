@@ -8,8 +8,8 @@ class LoginScreen(Screen):
         app = App.get_running_app()
         if self.ids["username"].text == "Admin" and self.ids["password"].text == "password" and self.ids["account_type"].text == "Admin":
             app.root.current = 'admin_screen'
-        #elif self.ids["username"].text == "Teller" and self.ids["password"].text == "password" and self.ids["account_type"].text == "Teller":
-            #self.manager.current = "teller"
+        elif self.ids["username"].text == "Teller" and self.ids["password"].text == "password" and self.ids["account_type"].text == "Teller":
+            app.root.current = 'teller_screen'
     pass
 
 class AdminScreen(Screen):
@@ -26,6 +26,21 @@ class AdminScreen(Screen):
         app = App.get_running_app()
         app.root.current = 'login_screen'
 
+class TellerScreen(Screen):
+    app = App.get_running_app()
+    def change_screen(self, instance):
+        app = App.get_running_app()
+        if instance.text == 'Lookup Customer':
+            self.ids.screen_manager.current = 'customer_lookup_screen'
+        elif instance.text == 'Transfers':
+            self.ids.screen_manager.current = 'transfer_screen'
+        elif instance.text == 'Customer History':
+            self.ids.screen_manager.current = 'customer_history_screen'
+    def logout(self):
+        app = App.get_running_app()
+        app.root.current = 'login_screen'
+    pass
+
 class ScreenManagement(ScreenManager):
     pass
 
@@ -38,20 +53,10 @@ class BankWindow(BoxLayout):
         #content = self.ids.screen_content
     
 
-#presentation = Builder.load_file("bank.kv")
-
 class BankApp(App):
-    #sm = ScreenManager()
-    #screens = {}
-    def build(self):
-        #self.__create_screens()
-        #BankApp.sm.add_widget(BankApp.screens['admin_screen'])
-        return 
 
-    #def __create_screens(self):
-        #BankApp.screens['login_screen'] = LoginScreen(name='loginscreen')
-        #BankApp.screens['admin_screen'] = AdminScreen(name='adminscreen')
-        #MyApp.screens['teller_screen'] = TellerScreen(name='tellerscreen')
+    def build(self):
+        return 
 
 if __name__ == '__main__':
     BankApp().run()
