@@ -1,0 +1,56 @@
+#:import utils kivy.utils
+<LoginScreen@Screen>:
+    name: "login_screen"
+    id: login_page
+    orientation: "vertical"
+    spacing: 10
+    space_x: self.size[0]/3
+
+    BoxLayout:
+        orientation: "vertical"
+        #spacing: 20
+        padding: login_page.space_x, 10
+        canvas.before:
+            Color:
+                rgba: (0.761,0.761,0.761,1)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            text: "Financial Way"
+            font_size: 90
+            font_name: "DejaVuSans"
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 10
+            size_hint_y: None
+            height: 100
+            # Spinner:
+            #     id: account_type
+            #     text: 'Account Type'
+            #     values: ('Admin', 'Teller')
+            #     background_color: 0.2, 0.2, 0.8, 1
+            TextInput:
+                id: username
+                multiline: False
+                write_tab: False
+                hint_text: "Username"
+            TextInput:
+                id: password
+                password: True # hide password
+                multiline: False
+                write_tab: False
+                hint_text: "Password"
+        Label:
+            id: sp
+            size_hint_y: None
+            height: 40
+        Button:
+            text: "Sign In"
+            size_hint_y: None
+            height: 40
+            on_release: root.verify_credentials()
+            background_color: (0,.5,.5,1)
+
+        Label:
+            id: sp2

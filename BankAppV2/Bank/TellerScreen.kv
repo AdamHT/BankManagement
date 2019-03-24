@@ -1,0 +1,432 @@
+#:import utils kivy.utils
+<TellerScreen@Screen>:
+    name: "teller_screen"
+
+    BoxLayout:
+        id: main_win
+        orientation: 'vertical'
+        spacing: 2
+        canvas.before:
+            Color:
+                rgba: (.91,.91,.91,1)
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        BoxLayout:
+            id: top_nav
+            size_hint_y: None
+            height: 30
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex('#680016')
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
+            Label:
+                text: 'Teller Dashboard'
+                bold: True
+                size_hint: (.9, None)
+                height: 30
+                padding: 3,3
+            FlatButton:
+                id: file_trigger
+                text: 'Logout'
+                #text: 'File'
+                #on_release: file_dropdown.open(self)
+                size_hint: (.1, None)
+                on_release: root.logout()
+                height: 30
+                canvas.before:
+                    Color:
+                        #rgb: utils.get_color_from_hex('#031424')
+                        rgba: (0.267, 0.027, 0.09, 1)
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+        BoxLayout:
+            id: content_nav
+
+            BoxLayout:
+                id: nav_tabs
+                size_hint_x: None
+                width: 175
+                orientation: 'vertical'
+                spacing: 5
+                canvas.before:
+                    Color:
+                        rgb: utils.get_color_from_hex('#680016')
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                ToggleButton:
+                    id: lookup_toggle
+                    text: 'Lookup Customer'
+                    #size_hint_y: .1
+                    size_hint_y: None
+                    height: 50
+                    state: 'down'
+                    background_color: (0.547, 0.147, 0.253,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                ToggleButton:
+                    id: transfers_toggle
+                    text: 'Transfers'
+                    #size_hint_y: .1
+                    size_hint_y: None
+                    height: 50
+                    background_color: (0.547, 0.147, 0.253,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                ToggleButton:
+                    id: deposits_toggle
+                    text: 'Deposits'
+                    #size_hint_y: .1
+                    size_hint_y: None
+                    height: 50
+                    background_color: (0.547, 0.147, 0.253,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                ToggleButton:
+                    id: withdrawals_toggle
+                    text: 'Withdrawals'
+                    #size_hint_y: .1
+                    size_hint_y: None
+                    height: 50
+                    background_color: (0.547, 0.147, 0.253,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                Label:
+                    id: sp
+                    text: ''
+                    size_hint_y: .7
+            BoxLayout:
+                id: all_content
+                size_hint_x: .85
+                padding: 20,10
+                ScreenManager:
+                    id: screen_manager
+                    Screen:
+                        id: customer_lookup_screen
+                        name: 'customer_lookup_screen'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            spacing: 10
+                            #BoxLayout:
+                                #id: scrn_contents
+                            Label:
+                                text: ''
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                spacing: 10
+                                size_hint_y: None
+                                height: 35
+                                Label:
+                                    text: ''
+                                TextInput:
+                                    id: lookup_ti
+                                    hint_text: 'Account Number'
+                                    multiline: False
+                                Button:
+                                    id: search_customer_ti
+                                    text: 'search'
+                                Label:
+                                    text: ''
+                            Label:
+                                text: ''
+                    Screen:
+                        id: transfer_screen
+                        name: 'transfer_screen'
+                        BoxLayout:
+                            id: transfer_bl
+                            orientation: 'vertical'
+                            spacing: 10
+                            Label:
+                                id: transfer_label
+                                text: "Transfer money from one account to another."
+                                size_hint_y: None
+                                height: 45
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.7,0.7,0.7,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                            BoxLayout:
+                                orientation: 'vertical'
+                                spacing: 15
+                                padding: transfer_screen.x-75, 100
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.8,0.8,0.8,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                Label:
+                                    text: ''
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'From Account:'
+                                        size_hint_x: .4
+                                        color: .2, .2, .2, 1
+                                        # canvas.before:
+                                        #     Color:
+                                        #         rgba: (0.5,0.5,0.5,1)
+                                        #     Rectangle:
+                                        #         size: self.size
+                                        #         pos: self.pos
+                                    Spinner:
+                                        text: 'Select Account'
+                                        size_hint_x: .6
+                                        values: ('Account 1', 'Account 2', 'Account 3')
+                                        background_color: 0.447, 0.047, 0.153, 1
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'To Account:'
+                                        size_hint_x: .4
+                                        color: .2, .2, .2, 1
+                                        # canvas.before:
+                                        #     Color:
+                                        #         rgba: (0.5,0.5,0.5,1)
+                                        #     Rectangle:
+                                        #         size: self.size
+                                        #         pos: self.pos
+                                    Spinner:
+                                        text: 'Select Account'
+                                        size_hint_x: .6
+                                        values: ('Account 1', 'Account 2', 'Account 3')
+                                        background_color: 0.447, 0.047, 0.153, 1
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'Amount: '
+                                        size_hint_x: .4
+                                        color: .2, .2, .2, 1
+                                        # canvas.before:
+                                        #     Color:
+                                        #         rgba: (0.5,0.5,0.5,1)
+                                        #     Rectangle:
+                                        #         size: self.size
+                                        #         pos: self.pos
+                                    TextInput:
+                                        size_hint_x: .6
+                                        hint_text: '$'
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: ''
+                                        size_hint_x: .6
+                                    Button:
+                                        text: 'Continue'
+                                        size_hint_x: .4
+                                Label:
+                                    text: ''
+
+                    Screen:
+                        id: deposit_screen
+                        name: 'deposit_screen'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            spacing: 10
+                            Label:
+                                id: deposit_label
+                                text: "Deposit money into an account."
+                                size_hint_y: None
+                                height: 45
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.7,0.7,0.7,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                            BoxLayout:
+                                orientation: 'vertical'
+                                spacing: 15
+                                padding: transfer_screen.x-75, 100
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.8,0.8,0.8,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                Label:
+                                    text: ''
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'To Account:'
+                                        size_hint_x: .4
+                                        color: .2, .2, .2, 1
+                                        # canvas.before:
+                                        #     Color:
+                                        #         rgba: (0.5,0.5,0.5,1)
+                                        #     Rectangle:
+                                        #         size: self.size
+                                        #         pos: self.pos
+                                    Spinner:
+                                        text: 'Select Account'
+                                        size_hint_x: .6
+                                        values: ('Account 1', 'Account 2', 'Account 3')
+                                        background_color: 0.447, 0.047, 0.153, 1
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'Amount: '
+                                        size_hint_x: .4
+                                        color: .2, .2, .2, 1
+                                        # canvas.before:
+                                        #     Color:
+                                        #         rgba: (0.5,0.5,0.5,1)
+                                        #     Rectangle:
+                                        #         size: self.size
+                                        #         pos: self.pos
+                                    TextInput:
+                                        size_hint_x: .6
+                                        hint_text: '$'
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: ''
+                                        size_hint_x: .6
+                                    Button:
+                                        text: 'Continue'
+                                        size_hint_x: .4
+                                Label:
+                                    text: ''
+                    Screen:
+                        id: withdrawal_screen
+                        name: 'withdrawal_screen'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            spacing: 10
+                            Label:
+                                id: deposit_label
+                                text: "withdrawal money from an account."
+                                size_hint_y: None
+                                height: 45
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.7,0.7,0.7,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                            BoxLayout:
+                                orientation: 'vertical'
+                                spacing: 15
+                                padding: transfer_screen.x-75, 100
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.8,0.8,0.8,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                Label:
+                                    text: ''
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'From Account:'
+                                        size_hint_x: .4
+                                        color: .2, .2, .2, 1
+                                        # canvas.before:
+                                        #     Color:
+                                        #         rgba: (0.5,0.5,0.5,1)
+                                        #     Rectangle:
+                                        #         size: self.size
+                                        #         pos: self.pos
+                                    Spinner:
+                                        text: 'Select Account'
+                                        size_hint_x: .6
+                                        values: ('Account 1', 'Account 2', 'Account 3')
+                                        background_color: 0.447, 0.047, 0.153, 1
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'Amount: '
+                                        size_hint_x: .4
+                                        color: .2, .2, .2, 1
+                                        # canvas.before:
+                                        #     Color:
+                                        #         rgba: (0.5,0.5,0.5,1)
+                                        #     Rectangle:
+                                        #         size: self.size
+                                        #         pos: self.pos
+                                    TextInput:
+                                        size_hint_x: .6
+                                        hint_text: '$'
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 20
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: ''
+                                        size_hint_x: .6
+                                    Button:
+                                        text: 'Continue'
+                                        size_hint_x: .4
+                                Label:
+                                    text: ''
+        BoxLayout:
+            id: status_bar
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex('#680016')
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                text: 'Logged in as: '
+                size_hint: (.25, None)
+                height: 30
+            Label:
+                text: 'Teller Name '
+                size_hint: (.25, None)
+                height: 30
+            Label:
+                text: 'Current customer: '
+                size_hint: (.25, None)
+                height: 30
+            Label:
+                text: 'Customer name '
+                size_hint: (.25, None)
+                height: 30
