@@ -49,7 +49,9 @@
             text: "Sign In"
             size_hint_y: None
             height: 40
-            on_release: root.verify_credentials()
+            #on_release: root.verify_credentials()
+            on_press: root.login()
+            on_release: root.reset()
             background_color: (0,.5,.5,1)
 
         Label:
