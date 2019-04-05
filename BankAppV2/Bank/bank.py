@@ -1,6 +1,7 @@
 import requests
 import json
 import re
+import random
 
 from kivy.uix.popup import Popup
 from kivy.app import App
@@ -65,8 +66,12 @@ class AdminScreen(Screen):
             self.ids.screen_manager.current = 'user_screen'
         # elif instance.text == 'Delete Account':
         #     self.ids.screen_manager.current = 'delete_account_screen'
-    
+
     def SetCurrentCustomer(self,firstname, lastname, address, city, state, zipcode, email, phone, ssn, username):
+        App.get_running_app().adminCustomer = CurrentAdminCustomer()
+
+
+
         App.get_running_app().adminCustomer.first_name = firstname
         App.get_running_app().adminCustomer.last_name = lastname
         App.get_running_app().adminCustomer.street_address = address
@@ -78,14 +83,52 @@ class AdminScreen(Screen):
         App.get_running_app().adminCustomer.first_name = firstname
         App.get_running_app().adminCustomer.ssn = ssn
         App.get_running_app().adminCustomer.username = username
+        self.ids.current_customer_status_bar = App.get_running_app().adminCustomer.first_name + " " + App.get_running_app().adminCustomer.last_name
 
-    def SetStatus(self, status, user):
+    def SetStatus(self, status):
         self.ids.status_text.text = status
-        self.ids.current_customer_status_bar = user
 
+    def parse_account_info(self, acct_number):
+
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+
+        aDict = {  # must use dictionary, is requirement of the request library
+            "acct_number": acct_number
+
+        }
+        hDict = {
+            "Authorization": "Token " + token
+        }
+        r = sess.post('https://localhost/view_customerAcct/', data=aDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+        
+        test = json.loads(r.text)
+        print(test['acct_infoToBePrinted'])
+        input()
+
+        y = json.loads(r.text)
+        
+        print('Customer Name:', y['acct_infoToBePrinted']['first_name'], y['acct_infoToBePrinted']['last_name'])
+        # print('Last Name:', y['acct_infoToBePrinted']['last_name'])
+        print('Account Number:', y['acct_infoToBePrinted']['acct_number'])
+        print('Account Type:', y['acct_infoToBePrinted']['acct_type'])
+        # acct_balance_to_view= locale.format("%d", y['acct_infoToBePrinted']['acct_balance'], grouping=True)
+        acct_balance_to_view = "{:,}".format(y['acct_infoToBePrinted']['acct_balance'])
+        # print('Account Balance:$', y['acct_infoToBePrinted']['acct_balance'])
+        print('Account Balance:$', acct_balance_to_view)
+
+    def LookUpSSN(self, ssn):
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+        ssnDict = {"ss_number": ssn}
+
+        hDict = {"Authorization": "Token " + token}
+        r = sess.post('https://localhost/find_customerAcct/', data=ssnDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+        test = json.loads(r.text)
 
     def SearchCustomerClick(self):
-        #add the if statemtn logic stuff if a user is found
+        #if LookUpSSN(self.ids.customer_search_label_admin.text) == true
+        self.SetCurrentCustomer(self.ids.customer_search_label_admin.text)
         self.ids.customer_search_label_admin.text = self.ids.lookup_ti_admin.text + " account found!"
         self.ids.current_customer_status_bar.text = self.ids.lookup_ti_admin.text
 
@@ -144,24 +187,29 @@ class AdminScreen(Screen):
         r = sess.post('https://localhost/create_acct/', data = cDict, headers = hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
         self.SetCurrentCustomer(firstname, lastname, address, city, state, zipcode, email, phonenumber, ssn, username)
-        self.SetStatus("New Customer Added", firstname + " " + lastname)
+        self.SetStatus("New Customer Added")
         self.ids.screen_manager.current = 'add_account_screen'
 
     def AddAccount(self):
-        for index, text in enumerate(self.ids.newAccountType.values):
-            if index == 1:
-                # caDict = {  # must use dictionary, is requirement of the request library
-				# 		"username" : username,
-				# 		"acct_type": acct_type,
-				# 		"acct_number": acct_number,
-				# 		"acct_balance": acct_balance,
-				# 		}
-                # hDict = {
-                #     "Authorization": "Token " + token
-                # }
-				# 	r = sess.post('https://localhost/create_customerAcct/', data=caDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
-                #self.ids.current_customer_status_bar.text = self.ids.newAccountType.text
-                self.SetStatus(self.ids.newAccountType.text + " account added!")
+
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+        if App.get_running_app().adminCustomer.ssn == "":
+            pass
+        
+        acct_number = random.randint(0, 999999999)
+        caDict = {
+                "ss_number" : App.get_running_app().adminCustomer.ssn,
+                "acct_type": self.ids.newAccountType.text,
+                "acct_number": acct_number,
+                "acct_balance": self.ids.startingBalance.text,
+                }
+        hDict = {
+            "Authorization": "Token " + token
+        }
+        r = sess.post('https://localhost/create_customerAcct/', data=caDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+        #self.ids.current_customer_status_bar = self.ids.newAccountType.text
+        self.SetStatus(self.ids.newAccountType.text + " account added!")
 
 
 
@@ -323,7 +371,6 @@ class BankApp(App):
         token = ""
         sess = ""
         return
-
 
 
 
