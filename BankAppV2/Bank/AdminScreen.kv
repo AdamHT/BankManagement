@@ -235,8 +235,9 @@
                                         #     hint_text: 'Email'
                                         #     multiline: False
                                         #     write_tab: False
-                                        EmailInput:
+                                        TextInput:
                                             id: email
+                                            hint_text: 'email@domain.com'
                                         Label:
                                             text: 'Phone #'
                                             canvas.before:
@@ -328,6 +329,7 @@
                                             text: 'Next'
                                             on_release:
                                                 root.FinishAddUser()
+                                                root.ClearDetails()
                                     Label:
                                         text: ''
                     Screen:
@@ -373,12 +375,29 @@
                                         id: lookup_customer_button
                                         size_hint_x: .2
                                         text: 'search'
-                                        on_release: root.SearchCustomerClick()
+                                        on_release:
+                                            root.SetCurrentCustomer(root.ids.lookup_customer.text)
+                                            app.get_info()
                                     Label:
                                         text: ''
                                         size_hint_x: .2
-                                Label:
-                                    text: ''
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    Label:
+                                        text: ''
+                                        size_hint_x: .2
+                                    Label:
+                                        id: customerName
+                                        text: "Name goes here"
+                                        canvas.before:
+                                            Color:
+                                                rgba: (0.6,0.6,0.6,1)
+                                            Rectangle:
+                                                size: self.size
+                                                pos: self.pos
+                                    Label:
+                                        text: ''
+                                        size_hint_x: .2
                             # Label:
                             #     id: customer_search_label_admin
                             #     text: 'Status stuff here'
@@ -420,7 +439,7 @@
                                     BoxLayout:
                                         RecycleView:
                                             viewclass: 'SelectableButton'
-                                            data: [{'text': str(x)} for x in rv.data_items]
+                                            data: [{'text': str(x)} for x in app.data_items]
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.3,0.3,0.7,1)
@@ -428,7 +447,7 @@
                                                     size: self.size
                                                     pos: self.pos
                                             SelectableRecycleGridLayout:
-                                                cols: 3
+                                                cols: 1
                                                 default_size: None, dp(56)
                                                 default_size_hint: 1, None
                                                 size_hint_y: None
@@ -552,15 +571,11 @@
                                     size_hint_y: None
                                     height: 45
                                     Button:
-                                        text: 'Back'
-                                        size_hint_x: .5
-                                        on_release:
-                                            screen_manager.direction = SlideTransition(direction='left')
-                                            screen_manager.current = 'add_user_screen'
-                                    Button:
                                         text: 'Finish'
                                         size_hint_x: .5
-                                        on_release: root.FinishAddUser()
+                                        on_release: 
+                                            screen_manager.current = 'user_screen'
+                                            root.ResetAddAccountScreen()
                                 Label:
                                     text: ''
                     # Screen:

@@ -21,7 +21,7 @@ from kivy.uix.behaviors import FocusBehavior
 from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 Window.minimum_height = 500
-Window.minimum_width = 700
+Window.minimum_width = 800
 
 class LoginScreen(Screen):
     def verify_credentials(self):
@@ -41,6 +41,8 @@ class LoginScreen(Screen):
         print(r)
         json_response = json.loads(r.text)
         App.get_running_app().token = json_response['token']
+
+        loggedin = True
 
         if json_response['usertype'] == 2:
             app.root.current = 'teller_screen'
@@ -67,23 +69,9 @@ class AdminScreen(Screen):
         # elif instance.text == 'Delete Account':
         #     self.ids.screen_manager.current = 'delete_account_screen'
 
-    def SetCurrentCustomer(self,firstname, lastname, address, city, state, zipcode, email, phone, ssn, username):
-        App.get_running_app().adminCustomer = CurrentAdminCustomer()
-
-
-
-        App.get_running_app().adminCustomer.first_name = firstname
-        App.get_running_app().adminCustomer.last_name = lastname
-        App.get_running_app().adminCustomer.street_address = address
-        App.get_running_app().adminCustomer.city = city
-        App.get_running_app().adminCustomer.state = state
-        App.get_running_app().adminCustomer.zipcode = zipcode
-        App.get_running_app().adminCustomer.email = email
-        App.get_running_app().adminCustomer.phone_number = phone
-        App.get_running_app().adminCustomer.first_name = firstname
+    def SetCurrentCustomer(self, ssn):
+        App.get_running_app().adminCustomer = CurrentCustomer()
         App.get_running_app().adminCustomer.ssn = ssn
-        App.get_running_app().adminCustomer.username = username
-        self.ids.current_customer_status_bar = App.get_running_app().adminCustomer.first_name + " " + App.get_running_app().adminCustomer.last_name
 
     def SetStatus(self, status):
         self.ids.status_text.text = status
@@ -128,6 +116,7 @@ class AdminScreen(Screen):
 
     def SearchCustomerClick(self):
         #if LookUpSSN(self.ids.customer_search_label_admin.text) == true
+        #App.get_running_app().recycle.get_info()
         self.SetCurrentCustomer(self.ids.customer_search_label_admin.text)
         self.ids.customer_search_label_admin.text = self.ids.lookup_ti_admin.text + " account found!"
         self.ids.current_customer_status_bar.text = self.ids.lookup_ti_admin.text
@@ -186,7 +175,7 @@ class AdminScreen(Screen):
             }
         r = sess.post('https://localhost/create_acct/', data = cDict, headers = hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
-        self.SetCurrentCustomer(firstname, lastname, address, city, state, zipcode, email, phonenumber, ssn, username)
+        self.SetCurrentCustomer(ssn)
         self.SetStatus("New Customer Added")
         self.ids.screen_manager.current = 'add_account_screen'
 
@@ -210,7 +199,7 @@ class AdminScreen(Screen):
         r = sess.post('https://localhost/create_customerAcct/', data=caDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
         #self.ids.current_customer_status_bar = self.ids.newAccountType.text
         self.SetStatus(self.ids.newAccountType.text + " account added!")
-
+        self.ResetAddAccountScreen()
 
 
     def ClearDetails(self):
@@ -234,6 +223,8 @@ class AdminScreen(Screen):
         pass
 
     def ResetAddAccountScreen(self):
+        self.ids.newAccountType.text = "Select Account"
+        self.ids.startingBalance.text = ""
         pass
 
     def logout(self):
@@ -280,21 +271,12 @@ class SelectableButton(RecycleDataViewBehavior, Button):
 
 
 class RV(BoxLayout):
-    data_items = ListProperty([])
+    pass
 
-    def __init__(self, **kwargs):
-        super(RV, self).__init__(**kwargs)
-        self.get_info()
-
-    def get_info(self):
-        w, h = 4, 3
-        Matrix = [[0 for x in range(w)] for y in range(h)]
-        a = [[1,2,3], [4,5,6], [7, 8, 9], [1,2,3], [4,5,6], [7, 8, 9],[1,2,3], [4,5,6], [7, 8, 9]]
-
-        for row in a:
-            for col in row:
-                self.data_items.append(col)
-        #self.data = [{'text': str(x)} for x in range(100)]
+    # def __init__(self, **kwargs):
+    #     super(RV, self).__init__(**kwargs)
+    #     # if loggedin == True:
+    #     #     self.get_info()
 
 
 
@@ -307,7 +289,13 @@ class RV(BoxLayout):
 
 
 
-class CurrentAdminCustomer:
+
+
+
+
+
+
+class CurrentCustomer:
     def __init__(self):
         first_name = ""
         last_name = ""
@@ -321,8 +309,24 @@ class CurrentAdminCustomer:
         ssn= ""
         username = ""
 
+class CurrentTellerCustomer:
+    def __init__(self):
+        ssn = ""
+
 class TellerScreen(Screen):
-    app = App.get_running_app()
+    chosenAccount1 = ""
+    chosenAccount2 = ""
+    activeCustomer = False
+    def SetCurrentCustomer(self):
+        if self.check_is_integer(self.ids.lookup_ti.text) == 0 or self.check_account_length(self.ids.lookup_ti.text) == 0:
+            self.UpdateStatusBar("Enter valid SSN", 'Error')
+            self.activeCustomer = False
+            return
+        self.activeCustomer = True
+        self.UpdateStatusBar("User account found!", 'Valid')
+        App.get_running_app().tellerCustomer = CurrentTellerCustomer()
+        App.get_running_app().tellerCustomer.ssn = self.ids.lookup_ti.text
+
     def change_screen(self, instance):
         #app = App.get_running_app()
         self.ids.screen_manager.transition = NoTransition()
@@ -334,11 +338,163 @@ class TellerScreen(Screen):
             self.ids.screen_manager.current = 'deposit_screen'
         elif instance.text == 'Withdrawals':
             self.ids.screen_manager.current = 'withdrawal_screen'
+        elif instance.text == 'Payments':
+            self.ids.screen_manager.current = 'payments_screen'
+
+    def parse_account_info_teller(self, acct_number):
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+        aDict = {  # must use dictionary, is requirement of the request library
+            "acct_number": acct_number
+
+        }
+        hDict = {
+            "Authorization": "Token " + token
+        }
+        r = sess.post('https://localhost/view_customerAcct/', data=aDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+        test = json.loads(r.text)
+
+        y = json.loads(r.text)
+
+        fetched_acct_teller_details = str(y['acct_infoToBePrinted']['acct_number']) + " - " + y['acct_infoToBePrinted']['acct_type'] + " $" + str(y['acct_infoToBePrinted']['acct_balance'])
+        return fetched_acct_teller_details
+
+        #print('Account Type:', y['acct_infoToBePrinted']['acct_type'])
+
+    def Transfer(self):
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+        chosenAccount1 = self.ids.transferFromSpinner.text.split(' ')[0]
+        chosenAccount2 = self.ids.transferToSpinner.text.split(' ')[0]
+        print('account from: ' + chosenAccount1)
+        print('account to: ' + chosenAccount2)
+        amount = self.ids.transferAmount.text
+
+        tDict = {  # must use dictionary, is requirement of the request library
+					"to_acct_number": int(chosenAccount2),
+					"from_acct_number": int(chosenAccount1),
+					"transfer_amount": amount,
+
+				}
+        hDict = {
+					"Authorization": "Token " + token
+				}
+        r = sess.post('https://localhost/transfer_customerAcct/', data=tDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+        self.resetPages()
+        self.SearchCustomer()
+
+    def Deposit(self):
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+
+
+        chosenAccount1 = self.ids.depositSpinner.text.split(' ')[0]
+        amount = self.ids.depositAmount.text
+        aDict = {  # must use dictionary, is requirement of the request library
+					"acct_number": int(chosenAccount1),
+					"deposit_amount": amount,
+
+        }
+        hDict = {
+					"Authorization": "Token " + token
+				}
+        r = sess.post('https://localhost/deposit_customerAcct/', data=aDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+        self.resetPages()
+        self.SearchCustomer()
+
+    def Withdrawal(self):
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+        chosenAccount1 = self.ids.withdrawalSpinner.text.split(' ')[0]
+        amount = self.ids.withdrawalAmount.text
+        aDict = {  # must use dictionary, is requirement of the request library
+					"acct_number": int(chosenAccount1),
+					"withdrawl_amount": amount,
+
+        }
+        hDict = {
+					"Authorization": "Token " + token
+				}
+        r = sess.post('https://localhost/withdrawl_customerAcct/', data=aDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+        self.resetPages()
+        self.SearchCustomer()
+
+    def Payments(self):
+        pass
+
+    def resetPages(self):
+        self.ids.lookup_ti.text = ""
+
+        self.ids.transferFromSpinner.text = "Select Account"
+        self.ids.transferToSpinner.text = "Select Account"
+        self.ids.transferAmount.text = ""
+
+        self.ids.depositSpinner.text = "Select Account"
+        self.ids.depositAmount.text = ""
+
+        self.ids.withdrawalSpinner.text = "Select Account"
+        self.ids.withdrawalAmount.text = ""
+
+    def check_is_integer(self, number_to_check):
+        try:
+            val = int(number_to_check)
+            return 1
+        except ValueError:
+            return 0
+
+    def check_account_length(self, num):
+        length_count = len(num)
+        if length_count == 9:
+            return 1
+        else:
+            return 0
+
+    def SearchCustomer(self):
+        if self.activeCustomer == False:
+            return
+        else:
+            token = App.get_running_app().token
+            sess = App.get_running_app().sess
+
+            ssnDict = {  # must use dictionary, is requirement of the request library
+                        "ss_number": App.get_running_app().tellerCustomer.ssn
+
+                    }
+            hDict = {
+                        "Authorization": "Token " + token
+                    }
+            r = sess.post('https://localhost/find_customerAcct/', data=ssnDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+            test = json.loads(r.text)
+            print(test['acct_numbers'])
+            #print(test['acct_infoToBePrinted'])
+            # after this you'll have a list of the account numbers associated with the SSN you used
+            # to search. now run the for loop below to loop through and give you the details you need
+            # for the teller menu dropdowns
+            accounts = []
+            for acct_number in test['acct_numbers']:
+                accounts.append(self.parse_account_info_teller(acct_number))
+            self.ids.transferFromSpinner.values = accounts
+            self.ids.transferToSpinner.values = accounts
+            self.ids.depositSpinner.values = accounts
+            self.ids.withdrawalSpinner.values = accounts
+
+    def UpdateStatusBar(self, status, check):
+        self.ids.status.text = status
+        if check == "Error":
+            self.ids.status.background_color = 1,0,0,1
 
     def logout(self):
+
         app = App.get_running_app()
         app.root.transition = NoTransition()
         app.root.current = 'login_screen'
+        self.resetPages()
+
 
 class EmailInput(TextInput):
     def __init__(self, *args, **kwargs):
@@ -356,7 +512,6 @@ class EmailInput(TextInput):
         return super(EmailInput, self).insert_text(s, from_undo=from_undo)
 
 
-
 class ScreenManagement(ScreenManager):
     pass
 
@@ -367,12 +522,104 @@ class BankWindow(BoxLayout):
 
 class BankApp(App):
     def build(self):
-        adminCustomer = CurrentAdminCustomer()
+        adminCustomer = CurrentCustomer()
+        tellerCustomer = CurrentTellerCustomer()
         token = ""
         sess = ""
+
+    data_items = ListProperty([])
+    def get_info(self):
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+        ssnDict = {  # must use dictionary, is requirement of the request library
+                    "ss_number": App.get_running_app().adminCustomer.ssn
+                }
+        hDict = {
+                    "Authorization": "Token " + token
+                }
+        r = sess.post('https://localhost/find_customerAcct/', data=ssnDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+        test = json.loads(r.text)
+
+        print(test['acct_numbers'])
+
+        b = []
+
+        for acct_number in test['acct_numbers']:
+            #parse_account_info(acct_number)
+            b.append([self.get_list_info(acct_number)])
+
+        # b = []
+        # b.append(['one'])
+        # b.append(['two'])
+        # b.append(['three'])
+
+
+
+        for row in b:
+            for col in row:
+                self.data_items.append(col)
+        #self.data = [{'text': str(x)} for x in range(100)]
         return
 
+    #loggedin = False
 
+    def get_list_info(self, acct_number):
+
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+
+        aDict = {  # must use dictionary, is requirement of the request library
+            "acct_number": acct_number
+
+        }
+        hDict = {
+            "Authorization": "Token " + token
+        }
+        r = sess.post('https://localhost/view_customerAcct/', data=aDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+        test = json.loads(r.text)
+        print(test['acct_infoToBePrinted'])
+        #input()
+
+        y = json.loads(r.text)
+
+        #print('Customer Name:', y['acct_infoToBePrinted']['first_name'], y['acct_infoToBePrinted']['last_name'])
+        # print('Last Name:', y['acct_infoToBePrinted']['last_name'])
+        #print('Account Number:', y['acct_infoToBePrinted']['acct_number'])
+        #print('Account Type:', y['acct_infoToBePrinted']['acct_type'])
+        # acct_balance_to_view= locale.format("%d", y['acct_infoToBePrinted']['acct_balance'], grouping=True)
+        #acct_balance_to_view = "{:,}".format(y['acct_infoToBePrinted']['acct_balance'])
+        # print('Account Balance:$', y['acct_infoToBePrinted']['acct_balance'])
+        #print('Account Balance:$', acct_balance_to_view)
+        f = '{0} {1:>30} {2:>30}'
+        liststring = f.format(str(y['acct_infoToBePrinted']['acct_number']), y['acct_infoToBePrinted']['acct_type'], '$' +str(y['acct_infoToBePrinted']['acct_balance']))
+        #liststring = str(y['acct_infoToBePrinted']['acct_number']) + "        " + y['acct_infoToBePrinted']['acct_type'] + '        $' + str(y['acct_infoToBePrinted']['acct_balance'])
+        return liststring
 
 if __name__ == '__main__':
     BankApp().run()
+
+
+#####################################
+# print("\tPlease enter SSN or Username to remove")
+# 				ss_number = input() <----- this is for the SSN field in your search in teller menu
+                # after the ssn is input, when you hit the search button or whatever the fuck
+                # you'll then use the below to send that information off to the view, and it will return
+                # the account number(s) associated with that SSN
+
+# 				dDict = {  # must use dictionary, is requirement of the request library
+# 					"ss_number": ss_number,
+# 				}
+# 				hDict = {
+# 					"Authorization": "Token " + token
+# 				}
+# 				r = sess.post('https://localhost/delete_User/', data=dDict, headers=hDict,verify="C:/Users/Justin/Desktop/Apache24/Apache24/certs/Ursus.crt")
+
+# 				test = json.loads(r.text)
+# 				print(test['acct_infoToBePrinted'])
+                # after this you'll have a list of the account numbers associated with the SSN you used
+                # to search. now run the for loop below to loop through and give you the details you need
+                # for the teller menu dropdowns
+                #for acct_number in test['acct_numbers']:
+				#	parse_account_info_teller(acct_number)
