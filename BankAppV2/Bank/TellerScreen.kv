@@ -71,6 +71,16 @@
                     group: 'admin_navs'
                     on_state: root.change_screen(self)
                 ToggleButton:
+                    id: payments_toggle
+                    text: 'Payments'
+                    #size_hint_y: .1
+                    size_hint_y: None
+                    height: 50
+                    background_color: (0.547, 0.147, 0.253,1)
+                    background_normal: ''
+                    group: 'admin_navs'
+                    on_state: root.change_screen(self)
+                ToggleButton:
                     id: transfers_toggle
                     text: 'Transfers'
                     #size_hint_y: .1
@@ -93,16 +103,6 @@
                 ToggleButton:
                     id: withdrawals_toggle
                     text: 'Withdrawals'
-                    #size_hint_y: .1
-                    size_hint_y: None
-                    height: 50
-                    background_color: (0.547, 0.147, 0.253,1)
-                    background_normal: ''
-                    group: 'admin_navs'
-                    on_state: root.change_screen(self)
-                ToggleButton:
-                    id: payments_toggle
-                    text: 'Payments'
                     #size_hint_y: .1
                     size_hint_y: None
                     height: 50
@@ -175,88 +175,79 @@
                                     Rectangle:
                                         size: self.size
                                         pos: self.pos
-                            #BoxLayout:
-                            GridLayout:
-                                cols: 2
-                                rows: 4
+                            BoxLayout:
                                 orientation: 'vertical'
                                 spacing: 15
                                 padding: transfer_screen.x-115, 100
-                                row_default_height: 45
-                                row_force_default: True
+                                #col_force_default: True
                                 canvas.before:
                                     Color:
                                         rgba: (0.8,0.8,0.8,1)
                                     Rectangle:
                                         size: self.size
                                         pos: self.pos
-                                # Label:
-                                #     text: ''
-
-                                # BoxLayout:
-                                #     orientation: 'horizontal'
-                                #     spacing: 20
-                                #     size_hint_y: None
-                                #     height: 45
-                                Label:
-                                    text: 'From Account:'
-                                    size_hint_x: None
-                                    width: 150
-                                    color: .2, .2, .2, 1
-                                Spinner:
-                                    id: transferFromSpinner
-                                    text: 'Select Account'
-                                    size_hint_x: None
-                                    width: 300
-                                    #values: ('Checkings 1', 'Checkings 2', 'Savings 1')
-                                    background_color: 0.447, 0.047, 0.153, 1
-                                # BoxLayout:
-                                #     orientation: 'horizontal'
-                                #     spacing: 10
-                                #     size_hint_y: None
-                                #     height: 45
-                                Label:
-                                    text: 'To Account:'
-                                    size_hint_x: None
-                                    width: 150
-                                    color: .2, .2, .2, 1
-                                        
-                                Spinner:
-                                    id: transferToSpinner
-                                    text: 'Select Account'
-                                    size_hint_x: None
-                                    width: 300
-                                    values: ('Checkings 1', 'Checkings 2', 'Savings 1')
-                                    background_color: 0.447, 0.047, 0.153, 1
-                                # BoxLayout:
-                                #     orientation: 'horizontal'
-                                #     spacing: 20
-                                #     size_hint_y: None
-                                #     height: 45
-                                Label:
-                                    text: 'Amount: '
-                                    size_hint_x: None
-                                    width: 150
-                                    color: .2, .2, .2, 1
-                                TextInput:
-                                    id: transferAmount
-                                    size_hint_x: None
-                                    width: 300
-                                    hint_text: '$'
-                                # BoxLayout:
-                                #     orientation: 'horizontal'
-                                #     spacing: 20
-                                #     size_hint_y: None
-                                #     height: 45
                                 Label:
                                     text: ''
-                                    size_hint_x: .6
-                                Button:
-                                    text: 'Continue'
-                                    size_hint_x: .4
-                                    on_release: root.Transfer()
-                                # Label:
-                                #     text: ''
+
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 10
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'From Account:'
+                                        size_hint_x: .3
+                                        color: .2, .2, .2, 1
+                                    Spinner:
+                                        id: transferFromSpinner
+                                        text: 'Select Account'
+                                        size_hint_x: .7
+                                        #values: ('Checkings 1', 'Checkings 2', 'Savings 1')
+                                        background_color: 0.447, 0.047, 0.153, 1
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 10
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'To Account:'
+                                        size_hint_x: .3
+                                        color: .2, .2, .2, 1
+                                            
+                                    Spinner:
+                                        id: transferToSpinner
+                                        text: 'Select Account'
+                                        size_hint_x: .7
+                                        values: ('Checkings 1', 'Checkings 2', 'Savings 1')
+                                        background_color: 0.447, 0.047, 0.153, 1
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 10
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: 'Amount: '
+                                        size_hint_x: .3
+                                        color: .2, .2, .2, 1
+                                    TextInput:
+                                        id: transferAmount
+                                        size_hint_x: .7
+                                        hint_text: '$'
+                                BoxLayout:
+                                    orientation: 'horizontal'
+                                    spacing: 10
+                                    size_hint_y: None
+                                    height: 45
+                                    Label:
+                                        text: ''
+                                        size_hint_x: .3
+                                    Button:
+                                        text: 'Continue'
+                                        size_hint_x: None
+                                        width: 200
+                                        on_release: root.Transfer()
+                                Label:
+                                    text: ''
 
                     Screen:
                         id: deposit_screen
@@ -290,12 +281,12 @@
 
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    spacing: 20
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 45
                                     Label:
                                         text: 'To Account:'
-                                        size_hint_x: .4
+                                        size_hint_x: .3
                                         color: .2, .2, .2, 1
                                         # canvas.before:
                                         #     Color:
@@ -306,17 +297,17 @@
                                     Spinner:
                                         id: depositSpinner
                                         text: 'Select Account'
-                                        size_hint_x: .6
+                                        size_hint_x: .7
                                         values: ('Account 1', 'Account 2', 'Account 3')
                                         background_color: 0.447, 0.047, 0.153, 1
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    spacing: 20
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 45
                                     Label:
                                         text: 'Amount: '
-                                        size_hint_x: .4
+                                        size_hint_x: .3
                                         color: .2, .2, .2, 1
                                         # canvas.before:
                                         #     Color:
@@ -326,7 +317,7 @@
                                         #         pos: self.pos
                                     TextInput:
                                         id: depositAmount
-                                        size_hint_x: .6
+                                        size_hint_x: .7
                                         hint_text: '$'
                                 BoxLayout:
                                     orientation: 'horizontal'
@@ -335,10 +326,11 @@
                                     height: 45
                                     Label:
                                         text: ''
-                                        size_hint_x: .6
+                                        size_hint_x: .3
                                     Button:
                                         text: 'Continue'
-                                        size_hint_x: .4
+                                        size_hint_x: None
+                                        width: 200
                                         on_release: root.Deposit()
                                 Label:
                                     text: ''
@@ -374,12 +366,12 @@
 
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    spacing: 20
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 45
                                     Label:
                                         text: 'From Account:'
-                                        size_hint_x: .4
+                                        size_hint_x: .3
                                         color: .2, .2, .2, 1
                                         # canvas.before:
                                         #     Color:
@@ -390,18 +382,18 @@
                                     Spinner:
                                         id: withdrawalSpinner
                                         text: 'Select Account'
-                                        size_hint_x: .6
+                                        size_hint_x: .7
                                         values: ('Account 1', 'Account 2', 'Account 3')
                                         background_color: 0.447, 0.047, 0.153, 1
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    spacing: 20
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 45
                                     Label:
                                         
                                         text: 'Amount: '
-                                        size_hint_x: .4
+                                        size_hint_x: .3
                                         color: .2, .2, .2, 1
                                         # canvas.before:
                                         #     Color:
@@ -411,19 +403,20 @@
                                         #         pos: self.pos
                                     TextInput:
                                         id: withdrawalAmount
-                                        size_hint_x: .6
+                                        size_hint_x: .7
                                         hint_text: '$'
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    spacing: 20
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 45
                                     Label:
                                         text: ''
-                                        size_hint_x: .6
+                                        size_hint_x: .3
                                     Button:
                                         text: 'Continue'
-                                        size_hint_x: .4
+                                        size_hint_x: None
+                                        width: 200
                                         on_release: root.Withdrawal()
                                 Label:
                                     text: ''
@@ -502,12 +495,12 @@
                                         background_color: 0.447, 0.047, 0.153, 1
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    spacing: 20
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 45
                                     Label:
                                         text: 'Amount: '
-                                        size_hint_x: .4
+                                        size_hint_x: .3
                                         color: .2, .2, .2, 1
                                         # canvas.before:
                                         #     Color:
@@ -517,19 +510,20 @@
                                         #         pos: self.pos
                                     TextInput:
                                         id: paymentsAmount
-                                        size_hint_x: .6
+                                        size_hint_x: .7
                                         hint_text: '$'
                                 BoxLayout:
                                     orientation: 'horizontal'
-                                    spacing: 20
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 45
                                     Label:
                                         text: ''
-                                        size_hint_x: .6
+                                        size_hint_x: .3
                                     Button:
                                         text: 'Continue'
-                                        size_hint_x: .4
+                                        size_hint_x: None
+                                        width: 200
                                         on_release: root.Payments()
                                 Label:
                                     text: ''

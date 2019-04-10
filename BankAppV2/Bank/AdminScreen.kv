@@ -134,7 +134,7 @@
                                         orientation: 'horizontal'
                                         spacing: 5
                                         Label:
-                                            text: 'First Name'
+                                            text: 'Name'
                                             canvas.before:
                                                 Color:
                                                     rgba: (0.60,0.60,0.60,1)
@@ -146,14 +146,14 @@
                                             hint_text: 'first name'
                                             multiline: False
                                             write_tab: False
-                                        Label:
-                                            text: 'Last Name'
-                                            canvas.before:
-                                                Color:
-                                                    rgba: (0.60,0.60,0.60,1)
-                                                Rectangle:
-                                                    size: self.size
-                                                    pos: self.pos
+                                        # Label:
+                                        #     text: 'Last Name'
+                                        #     canvas.before:
+                                        #         Color:
+                                        #             rgba: (0.60,0.60,0.60,1)
+                                        #         Rectangle:
+                                        #             size: self.size
+                                        #             pos: self.pos
                                         TextInput:
                                             id: lastName
                                             hint_text: 'last name'
@@ -237,7 +237,9 @@
                                         #     write_tab: False
                                         TextInput:
                                             id: email
-                                            hint_text: 'email@domain.com'
+                                            hint_text: 'Email'
+                                            multiline: False
+                                            write_tab: False
                                         Label:
                                             text: 'Phone #'
                                             canvas.before:
@@ -280,6 +282,8 @@
                                             id: ssn
                                             hint_text: '000112222'
                                             password: True
+                                            multiline: False
+                                            write_tab: False
                                     BoxLayout:
                                         orientation: 'horizontal'
                                         spacing: 5
@@ -329,7 +333,7 @@
                                             text: 'Next'
                                             on_release:
                                                 root.FinishAddUser()
-                                                root.ClearDetails()
+                                                #root.ClearDetails()
                                     Label:
                                         text: ''
                     Screen:
@@ -352,52 +356,127 @@
                             #         Rectangle:
                             #             size: self.size
                             #             pos: self.pos
+                            # BoxLayout:
+                            #     orientation: 'vertical'
+                            #     Label:
+                            #         text: ''
                             BoxLayout:
-                                orientation: 'vertical'
-                                size_hint_y: .2
+                                orientation: 'horizontal'
+                                spacing: 10
                                 Label:
                                     text: ''
-                                BoxLayout:
-                                    orientation: 'horizontal'
-                                    spacing: 10
-                                    size_hint_y: None
-                                    height: 45
-                                    #height: 35
-                                    Label:
-                                        text: ''
-                                        size_hint_x: .2
-                                    TextInput:
-                                        id: lookup_customer
-                                        size_hint_x: .4
-                                        hint_text: 'SSN'
-                                        multiline: False
-                                    Button:
-                                        id: lookup_customer_button
-                                        size_hint_x: .2
-                                        text: 'search'
-                                        on_release:
-                                            root.SetCurrentCustomer(root.ids.lookup_customer.text)
-                                            app.get_info()
-                                    Label:
-                                        text: ''
-                                        size_hint_x: .2
-                                BoxLayout:
-                                    orientation: 'horizontal'
-                                    Label:
-                                        text: ''
-                                        size_hint_x: .2
-                                    Label:
-                                        id: customerName
-                                        text: "Name goes here"
-                                        canvas.before:
-                                            Color:
-                                                rgba: (0.6,0.6,0.6,1)
-                                            Rectangle:
-                                                size: self.size
-                                                pos: self.pos
-                                    Label:
-                                        text: ''
-                                        size_hint_x: .2
+                                    size_hint_x: .2
+                                TextInput:
+                                    id: lookup_customer
+                                    size_hint_x: .4
+                                    hint_text: 'SSN'
+                                    multiline: False
+                                Button:
+                                    id: lookup_customer_button
+                                    size_hint_x: .2
+                                    text: 'search'
+                                    on_release:
+                                        root.SetCurrentCustomer()
+                                        root.SearchCustomer()
+                                Label:
+                                    text: ''
+                                    size_hint_x: .2
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                Label:
+                                    text: ''
+                                    size_hint_x: .2
+                                Label:
+                                    id: customerName
+                                    text: "Name goes here"
+                                    canvas.before:
+                                        Color:
+                                            rgba: (0.6,0.6,0.6,1)
+                                        Rectangle:
+                                            size: self.size
+                                            pos: self.pos
+                                Label:
+                                    text: ''
+                                    size_hint_x: .2
+                            Label:
+                                text:''
+                                size_hint_y: None
+                                height: 5
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.1,0.1,0.1,1)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                            Label:
+                                text: 'Choose an account to view'
+                                color: 0,0,0,1
+                            Spinner:
+                                id: userAccounts
+                                text: 'Click To Select Account'
+                                #values: ('Regular Checking', 'Savings', 'Money Market', 'Home Mortgage Loan', 'Credit Card')
+                                background_color: 0.024, 0.184, 0.31, 1
+                                on_text: root.OnSpinnerSelect(self.text)
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.6,0.6,0.6,.5)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                Label:
+                                    text: "Account Number: "
+                                    color: 0,0,0,1
+                                Label:
+                                    id: accountNumber
+                                    text: '111111111'
+                                    color: 0,0,0,1
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.6,0.6,0.6,.5)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                Label:
+                                    text: "Account Type: "
+                                    color: 0,0,0,1
+                                Label:
+                                    id: accountType
+                                    text: 'type'
+                                    color: 0,0,0,1
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.6,0.6,0.6,.5)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                Label:
+                                    text: "Account Balance: "
+                                    color: 0,0,0,1
+                                Label:
+                                    id: accountBalance
+                                    text: '$$$$$'
+                                    color: 0,0,0,1
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                canvas.before:
+                                    Color:
+                                        rgba: (0.6,0.6,0.6,.5)
+                                    Rectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                Label:
+                                    text: "Interest Rate: "
+                                    color: 0,0,0,1
+                                Label:
+                                    id: accountInterest
+                                    text: '%%%%'
+                                    color: 0,0,0,1
                             # Label:
                             #     id: customer_search_label_admin
                             #     text: 'Status stuff here'
@@ -408,79 +487,79 @@
                             #         Rectangle:
                             #             size: self.size
                             #             pos: self.pos
-                        # SelectableButton:
-                        #     # Draw a background to indicate selection
-                        #     canvas.before:
-                        #         Color:
-                        #             rgba: (.0, 0.9, .1, .3) if self.selected else (0, 0, 0, 1)
-                        #         Rectangle:
-                        #             pos: self.pos
-                        #             size: self.size
-                            RV:
-                                id: rv
-                                BoxLayout:
-                                    orientation: "vertical"
+                            # RV:
+                            #     id: rv
+                            #     BoxLayout:
+                            #         orientation: "vertical"
 
-                                    GridLayout:
-                                        size_hint: 1, None
-                                        size_hint_y: None
-                                        height: 25
-                                        cols: 3
-                                        canvas.before:
-                                            Color:
-                                                rgba: (0.3,0.3,0.4,1)
-                                            Rectangle:
-                                                size: self.size
-                                                pos: self.pos
-                                        Label:
-                                            text: "User ID"
-                                        Label:
-                                            text: "User Name"
-                                    BoxLayout:
-                                        RecycleView:
-                                            viewclass: 'SelectableButton'
-                                            data: [{'text': str(x)} for x in app.data_items]
-                                            canvas.before:
-                                                Color:
-                                                    rgba: (0.3,0.3,0.7,1)
-                                                Rectangle:
-                                                    size: self.size
-                                                    pos: self.pos
-                                            SelectableRecycleGridLayout:
-                                                cols: 1
-                                                default_size: None, dp(56)
-                                                default_size_hint: 1, None
-                                                size_hint_y: None
-                                                height: self.minimum_height
-                                                orientation: 'vertical'
-                                                multiselect: True
-                                                touch_multiselect: True
+                            #         GridLayout:
+                            #             size_hint: 1, None
+                            #             size_hint_y: None
+                            #             height: 25
+                            #             cols: 3
+                            #             canvas.before:
+                            #                 Color:
+                            #                     rgba: (0.3,0.3,0.4,1)
+                            #                 Rectangle:
+                            #                     size: self.size
+                            #                     pos: self.pos
+                            #             Label:
+                            #                 text: "User ID"
+                            #             Label:
+                            #                 text: "User Name"
+                            #         BoxLayout:
+                            #             RecycleView:
+                            #                 viewclass: 'SelectableButton'
+                            #                 data: [{'text': str(x)} for x in app.data_items]
+                            #                 canvas.before:
+                            #                     Color:
+                            #                         rgba: (0.4,0.4,0.4,1)
+                            #                     Rectangle:
+                            #                         size: self.size
+                            #                         pos: self.pos
+                            #                 SelectableRecycleGridLayout:
+                            #                     cols: 1
+                            #                     default_size: None, dp(56)
+                            #                     default_size_hint: 1, None
+                            #                     size_hint_y: None
+                            #                     height: self.minimum_height
+                            #                     spacing: 3
+                            #                     orientation: 'vertical'
+                            #                     multiselect: True
+                            #                     touch_multiselect: True
                             BoxLayout:
                                 orientation: 'vertical'
-                                size_hint_y: .3
                                 Label:
                                     text: ''
                                 BoxLayout:
                                     id: ops_btns
                                     spacing: 30
                                     size_hint_y: None
-                                    height: 45
+                                    height: 35
                                     Label:
                                         text: ''
-                                        size_hint_x: .2
                                     Button:
-                                        id: crud_add
+                                        id: addAccountButton
                                         text: 'Add Account'
                                         on_release: root.FinishAddUser()
+                                        size_hint_x: None
+                                        width: 130
                                     Label:
                                         text: ''
-                                        size_hint_x: .1
                                     Button:
-                                        id: crud_remove
+                                        id: removeAccountButton
                                         text: 'Remove Account'
+                                        size_hint_x: None
+                                        width: 130
                                     Label:
                                         text: ''
-                                        size_hint_x: .2
+                                    Button:
+                                        id: removeUserButton
+                                        text: 'Remove User'
+                                        size_hint_x: None
+                                        width: 130
+                                    Label:
+                                        text: ''
                                 Label:
                                     text: ''
                     Screen:
@@ -532,7 +611,7 @@
                                         id: newAccountType
                                         text: 'Select Account'
                                         size_hint_x: .6
-                                        values: ('Regular checking', 'Savings', 'Money Market', 'Home Mortgage Loan', 'Credit Card')
+                                        values: ('Regular Checking', 'Savings', 'Money Market', 'Home Mortgage Loan', 'Credit Card')
                                         background_color: 0.024, 0.184, 0.31, 1
                                 BoxLayout:
                                     orientation: 'horizontal'
@@ -674,12 +753,12 @@
                     pos: self.pos
             Label:
                 text: 'Status: '
-                size_hint: (.25, None)
+                size_hint: (.15, None)
                 height: 30
             Label:
                 id: status_text
-                text: 'Teller Name '
-                size_hint: (.25, None)
+                text: ''
+                size_hint: (.35, None)
                 height: 30
             Label:
                 text: 'Current customer: '
