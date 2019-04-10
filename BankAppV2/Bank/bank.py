@@ -90,6 +90,7 @@ class AdminScreen(Screen):
             self.SetStatus("User account found!", 'Valid')
             App.get_running_app().adminCustomer = CurrentAdminCustomer()
             App.get_running_app().adminCustomer.ssn = self.ids.lookup_customer.text
+            print("SSN: " + App.get_running_app().adminCustomer.ssn)
 
     def SetStatus(self, status, statustype):
         self.ids.status_text.text = status
@@ -182,10 +183,10 @@ class AdminScreen(Screen):
 
     def OnSpinnerSelect(self, text):
         accountNum = self.ids.userAccounts.text.split(' ')[0]
-        self.ids.accountNumber.text = accountNum
-        self.ids.accountType.text = self.GetAccountType(accountNum)
-        self.ids.accountBalance.text = self.GetAccountBalance(accountNum)
-        self.ids.accountInterest.text = self.GetAccountInterest(accountNum)
+        #self.ids.accountNumber.text = accountNum
+        #self.ids.accountType.text = self.GetAccountType(accountNum)
+        #self.ids.accountBalance.text = self.GetAccountBalance(accountNum)
+        #self.ids.accountInterest.text = self.GetAccountInterest(accountNum)
 
     def SearchCustomer(self):
         if self.activeCustomer == False:
@@ -193,7 +194,7 @@ class AdminScreen(Screen):
         else:
             token = App.get_running_app().token
             sess = App.get_running_app().sess
-
+            print("ssn right before: " + App.get_running_app().adminCustomer.ssn)
             ssnDict = {  # must use dictionary, is requirement of the request library
                         "ss_number": App.get_running_app().adminCustomer.ssn
 
@@ -204,14 +205,17 @@ class AdminScreen(Screen):
             r = sess.post('https://localhost/find_customerAcct/', data=ssnDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
             test = json.loads(r.text)
-            #print(test['acct_numbers'])
+            print(test['acct_numbers'])
             accounts = []
             if test['acct_numbers'] == "Account Number Not Located, Account Does Not Exist!":
                 self.SetStatus("Account Not Found", "ERROR")
             else:
                 for acct_number in test['acct_numbers']:
+                    print("ACCNT: " + acct_number)
                     self.GetAccountInfo(acct_number)
                     accounts.append(self.admin_dropdown)
+                #print("LENGTH: " + len(accounts))
+                print("heeloooo?")
                 self.ids.userAccounts.values = accounts
 
                 self.SetStatusCustomerName(App.get_running_app().adminCustomer.first_name, App.get_running_app().adminCustomer.last_name)
@@ -237,7 +241,31 @@ class AdminScreen(Screen):
         else:
             return 0
 
-    def CheckTextFields
+    def CheckTextFields(self, text):
+        if text.isalpha():
+            return 1
+        else:
+            return 0
+
+    def CheckIsNotEmpty(self, text):
+        if text != "":
+            return 1
+        else:
+            return 0
+
+    def CheckIfEmail(self, email):
+        if '@' in email and '.' in email:
+            return 1
+        else:
+            return 0
+
+    def CheckPhoneNumber(self, phone):
+        if len(phone) >= 10:
+            for a in phone:
+                if a.isdigit() or a == '-':
+                    return 1
+        else:
+            return 0
 
     def GoToAddAccountFromAddUser(self):
         self.ids.screen_manager.transition.direction = 'left'
@@ -248,8 +276,53 @@ class AdminScreen(Screen):
         self.ids.screen_manager.current = 'add_user_screen'
 
     def CheckNewUserDetails(self):
-        if self.check_account_length(self.ids.ssn.text) == 0 or self.check_is_integer(self.ids.ssn.text) == 0:
-            self.SetStatus("Please Enter Valid SSN", "Error")
+        #first name
+        if self.CheckTextFields(self.ids.firstName.text) == 0 or self.CheckIsNotEmpty(self.ids.firstName.text) == 0:
+            self.SetStatus("Enter Valid First Name", "Error")
+            return 0
+        #last name
+        elif self.CheckTextFields(self.ids.lastName.text) == 0 or self.CheckIsNotEmpty(self.ids.lastName.text) == 0:
+            self.SetStatus("Enter Valid Last Name", "Error")
+            return 0
+        #Address
+        elif self.CheckIsNotEmpty(self.ids.streetAddress.text) == 0:
+            self.SetStatus("Enter Valid Address", "Error")
+            return 0
+        #City
+        elif self.CheckIsNotEmpty(self.ids.city.text) == 0:
+            self.SetStatus("Enter Valid City", "Error")
+            return 0
+        #State
+        elif self.CheckIsNotEmpty(self.ids.state.text) == 0 or self.CheckTextFields(self.ids.state.text) == 0:
+            self.SetStatus("Enter Valid State", "Error")
+            return 0
+        #Zipcode
+        elif self.check_is_integer(self.ids.zipcode.text) == 0:
+            self.SetStatus("Enter Valid Zip Code", "Error")
+            return 0
+        #Email
+        elif self.CheckIfEmail(self.ids.email.text) == 0:
+            self.SetStatus("Enter Valid Email", "Error")
+            return 0
+        #Phone Number
+        elif self.CheckPhoneNumber(self.ids.phoneNumber.text) == 0:
+            self.SetStatus("Enter Valid Phone Number", "Error")
+            return 0
+        #Account Type
+        elif self.ids.accountType.text == "Select Account":
+            self.SetStatus("Select An Account Type", "Error")
+            return 0
+        #SSN
+        elif self.check_account_length(self.ids.ssn.text) == 0 or self.check_is_integer(self.ids.ssn.text) == 0:
+            self.SetStatus("Enter Valid SSN", "Error")
+            return 0
+        #Username
+        elif self.CheckIsNotEmpty(self.ids.newUsername.text) == 0:
+            self.SetStatus("Enter Valid Username", "Error")
+            return 0
+        #Username
+        elif self.CheckIsNotEmpty(self.ids.newPassword.text) == 0:
+            self.SetStatus("Enter Valid Password", "Error")
             return 0
 
     def FinishAddUser(self):
@@ -302,7 +375,7 @@ class AdminScreen(Screen):
             }
         r = sess.post('https://localhost/create_acct/', data = cDict, headers = hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
-        self.SetCurrentCustomer()
+        #self.SetCurrentCustomer()
         self.SetSSNAfterCreation()
         self.ClearDetails()
         self.SetStatus("New Customer Added", "Error")
@@ -311,14 +384,17 @@ class AdminScreen(Screen):
     def SetSSNAfterCreation(self):
         App.get_running_app().adminCustomer = CurrentAdminCustomer()
         App.get_running_app().adminCustomer.ssn = self.ids.ssn.text
+        print("ssn after create: " + App.get_running_app().adminCustomer.ssn)
+        self.adminCustomer = True
 
     def AddAccount(self):
 
         token = App.get_running_app().token
         sess = App.get_running_app().sess
         if App.get_running_app().adminCustomer.ssn == "":
+            print(App.get_running_app().adminCustomer.ssn)
             pass
-        
+        print("ssn lookup: " + App.get_running_app().adminCustomer.ssn)
         acct_number = random.randint(0, 999999999)
         caDict = {
                 "ss_number" : App.get_running_app().adminCustomer.ssn,
