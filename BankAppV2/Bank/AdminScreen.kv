@@ -541,7 +541,7 @@
                                     Button:
                                         id: addAccountButton
                                         text: 'Add Account'
-                                        on_release: root.FinishAddUser()
+                                        on_release: root.GoToAddAccountFromUserScreen()
                                         size_hint_x: None
                                         width: 130
                                     Label:
@@ -551,6 +551,7 @@
                                         text: 'Remove Account'
                                         size_hint_x: None
                                         width: 130
+                                        on_release: root.RemoveAccount()
                                     Label:
                                         text: ''
                                     Button:
@@ -558,6 +559,7 @@
                                         text: 'Remove User'
                                         size_hint_x: None
                                         width: 130
+                                        on_release: root.RemoveUser()
                                     Label:
                                         text: ''
                                 Label:
@@ -760,6 +762,7 @@
                 text: ''
                 size_hint: (.35, None)
                 height: 30
+                bold: True
             Label:
                 text: 'Current customer: '
                 size_hint: (.25, None)
@@ -769,3 +772,4 @@
                 text: 'Customer name '
                 size_hint: (.25, None)
                 height: 30
+                bold: True
