@@ -81,16 +81,6 @@
                     background_normal: ''
                     group: 'admin_navs'
                     on_state: root.change_screen(self)
-                # ToggleButton:
-                #     id: delete_account_toggle
-                #     text: 'Delete Account'
-                #     #size_hint_y: .1
-                #     size_hint_y: None
-                #     height: 50
-                #     background_color: (0.044, 0.204, 0.51,1)
-                #     background_normal: ''
-                #     group: 'admin_navs'
-                #     on_state: root.change_screen(self)
                 Label:
                     id: sp
                     text: ''
@@ -265,7 +255,7 @@
                                                     size: self.size
                                                     pos: self.pos
                                         Spinner:
-                                            id: accountType
+                                            id: accountTypeDropdown
                                             text: 'Select Account'
                                             #size_hint_x: .6
                                             values: ('Admin', 'Teller', 'Customer')
@@ -342,24 +332,6 @@
                         BoxLayout:
                             orientation: 'vertical'
                             spacing: 10
-                            #BoxLayout:
-                                #id: scrn_contents
-                            
-                            # Label:
-                            #     text: 'List headers here'
-                            #     spacing: 10
-                            #     size_hint_y: None
-                            #     height: 35
-                            #     canvas.before:
-                            #         Color:
-                            #             rgba: (0.6,0.6,0.6,1)
-                            #         Rectangle:
-                            #             size: self.size
-                            #             pos: self.pos
-                            # BoxLayout:
-                            #     orientation: 'vertical'
-                            #     Label:
-                            #         text: ''
                             BoxLayout:
                                 orientation: 'horizontal'
                                 spacing: 10
@@ -374,7 +346,7 @@
                                 Button:
                                     id: lookup_customer_button
                                     size_hint_x: .2
-                                    text: 'search'
+                                    text: 'Search'
                                     on_release:
                                         root.SetCurrentCustomer()
                                         root.SearchCustomer()
@@ -388,13 +360,9 @@
                                     size_hint_x: .2
                                 Label:
                                     id: customerName
-                                    text: "Name goes here"
-                                    canvas.before:
-                                        Color:
-                                            rgba: (0.6,0.6,0.6,1)
-                                        Rectangle:
-                                            size: self.size
-                                            pos: self.pos
+                                    #text: "Name goes here"
+                                    color: 0,0,0,1
+                                    font_size: 35
                                 Label:
                                     text: ''
                                     size_hint_x: .2
@@ -416,7 +384,7 @@
                                 text: 'Click To Select Account'
                                 #values: ('Regular Checking', 'Savings', 'Money Market', 'Home Mortgage Loan', 'Credit Card')
                                 background_color: 0.024, 0.184, 0.31, 1
-                                on_text: root.OnSpinnerSelect(self.text)
+                                on_text: if userAccounts.text != "Click To Select Account": root.OnSpinnerSelect(self.text)
                             BoxLayout:
                                 orientation: 'horizontal'
                                 canvas.before:
@@ -430,7 +398,7 @@
                                     color: 0,0,0,1
                                 Label:
                                     id: accountNumber
-                                    text: '111111111'
+                                    text: ''
                                     color: 0,0,0,1
                             BoxLayout:
                                 orientation: 'horizontal'
@@ -445,7 +413,7 @@
                                     color: 0,0,0,1
                                 Label:
                                     id: accountType
-                                    text: 'type'
+                                    text: ''
                                     color: 0,0,0,1
                             BoxLayout:
                                 orientation: 'horizontal'
@@ -460,7 +428,7 @@
                                     color: 0,0,0,1
                                 Label:
                                     id: accountBalance
-                                    text: '$$$$$'
+                                    text: ''
                                     color: 0,0,0,1
                             BoxLayout:
                                 orientation: 'horizontal'
@@ -475,85 +443,47 @@
                                     color: 0,0,0,1
                                 Label:
                                     id: accountInterest
-                                    text: '%%%%'
+                                    text: ''
                                     color: 0,0,0,1
-                            # Label:
-                            #     id: customer_search_label_admin
-                            #     text: 'Status stuff here'
-                            #     size_hint_y: .5
-                            #     canvas.before:
-                            #         Color:
-                            #             rgba: (0.70,0.70,0.70,1)
-                            #         Rectangle:
-                            #             size: self.size
-                            #             pos: self.pos
-                            # RV:
-                            #     id: rv
-                            #     BoxLayout:
-                            #         orientation: "vertical"
-
-                            #         GridLayout:
-                            #             size_hint: 1, None
-                            #             size_hint_y: None
-                            #             height: 25
-                            #             cols: 3
-                            #             canvas.before:
-                            #                 Color:
-                            #                     rgba: (0.3,0.3,0.4,1)
-                            #                 Rectangle:
-                            #                     size: self.size
-                            #                     pos: self.pos
-                            #             Label:
-                            #                 text: "User ID"
-                            #             Label:
-                            #                 text: "User Name"
-                            #         BoxLayout:
-                            #             RecycleView:
-                            #                 viewclass: 'SelectableButton'
-                            #                 data: [{'text': str(x)} for x in app.data_items]
-                            #                 canvas.before:
-                            #                     Color:
-                            #                         rgba: (0.4,0.4,0.4,1)
-                            #                     Rectangle:
-                            #                         size: self.size
-                            #                         pos: self.pos
-                            #                 SelectableRecycleGridLayout:
-                            #                     cols: 1
-                            #                     default_size: None, dp(56)
-                            #                     default_size_hint: 1, None
-                            #                     size_hint_y: None
-                            #                     height: self.minimum_height
-                            #                     spacing: 3
-                            #                     orientation: 'vertical'
-                            #                     multiselect: True
-                            #                     touch_multiselect: True
                             BoxLayout:
                                 orientation: 'vertical'
                                 Label:
                                     text: ''
                                 BoxLayout:
                                     id: ops_btns
-                                    spacing: 30
+                                    spacing: 10
                                     size_hint_y: None
                                     height: 35
                                     Label:
                                         text: ''
+                                    Button:
+                                        id: addInterestButton
+                                        text: 'Add Interest'
+                                        #on_release: root.
+                                        size_hint_x: None
+                                        width: 130
+                                        on_release: root.AddInterest()
                                     Button:
                                         id: addAccountButton
                                         text: 'Add Account'
                                         on_release: root.GoToAddAccountFromUserScreen()
                                         size_hint_x: None
                                         width: 130
-                                    Label:
-                                        text: ''
+                                    # Label:
+                                    #     text: ''
+                                    #     size_hint_x: None
+                                    #     width: 10
                                     Button:
                                         id: removeAccountButton
                                         text: 'Remove Account'
                                         size_hint_x: None
                                         width: 130
-                                        on_release: root.RemoveAccount()
-                                    Label:
-                                        text: ''
+                                        on_release:
+                                            root.RemoveAccount()
+                                    # Label:
+                                    #     text: ''
+                                    #     size_hint_x: None
+                                    #     width: 10
                                     Button:
                                         id: removeUserButton
                                         text: 'Remove User'
@@ -613,7 +543,7 @@
                                         id: newAccountType
                                         text: 'Select Account'
                                         size_hint_x: .6
-                                        values: ('Regular Checking', 'Savings', 'Money Market', 'Home Mortgage Loan', 'Credit Card')
+                                        values: ('Regular Checking', 'Savings', 'Money Market', 'Mortgage', 'Credit Card')
                                         background_color: 0.024, 0.184, 0.31, 1
                                 BoxLayout:
                                     orientation: 'horizontal'
@@ -654,93 +584,13 @@
                                     Button:
                                         text: 'Finish'
                                         size_hint_x: .5
-                                        on_release: 
+                                        on_release:
                                             screen_manager.current = 'user_screen'
                                             root.ResetAddAccountScreen()
+                                            root.ResetUserScreen()
+                                            root.SearchCustomer()
                                 Label:
                                     text: ''
-                    # Screen:
-                    #     id: delete_account_screen
-                    #     name: 'delete_account_screen'
-                    #     BoxLayout:
-                    #         orientation: 'vertical'
-                    #         spacing: 10
-                    #         Label:
-                    #             id: account_label
-                    #             text: "Delete an existing account."
-                    #             size_hint_y: None
-                    #             height: 45
-                    #             canvas.before:
-                    #                 Color:
-                    #                     rgba: (0.7,0.7,0.7,1)
-                    #                 Rectangle:
-                    #                     size: self.size
-                    #                     pos: self.pos
-                    #         BoxLayout:
-                    #             orientation: 'vertical'
-                    #             spacing: 15
-                    #             padding: add_account_screen.x-75, 100
-                    #             canvas.before:
-                    #                 Color:
-                    #                     rgba: (0.8,0.8,0.8,1)
-                    #                 Rectangle:
-                    #                     size: self.size
-                    #                     pos: self.pos
-                    #             Label:
-                    #                 text: ''
-
-                    #             BoxLayout:
-                    #                 orientation: 'horizontal'
-                    #                 spacing: 20
-                    #                 size_hint_y: None
-                    #                 height: 45
-                    #                 Label:
-                    #                     text: 'Existing account:'
-                    #                     size_hint_x: .4
-                    #                     color: .2, .2, .2, 1
-                    #                     # canvas.before:
-                    #                     #     Color:
-                    #                     #         rgba: (0.5,0.5,0.5,1)
-                    #                     #     Rectangle:
-                    #                     #         size: self.size
-                    #                     #         pos: self.pos
-                    #                 Spinner:
-                    #                     text: 'Select Account'
-                    #                     size_hint_x: .6
-                    #                     values: ('Regular checking 1', 'Savings 1', 'Credit Card 1', 'Credit Card 2')
-                    #                     background_color: 0.024, 0.184, 0.31, 1
-                    #             BoxLayout:
-                    #                 orientation: 'horizontal'
-                    #                 spacing: 20
-                    #                 size_hint_y: None
-                    #                 height: 45
-                    #                 Label:
-                    #                     text: 'Current account balance:'
-                    #                     size_hint_x: .4
-                    #                     color: .2, .2, .2, 1
-                    #                     # canvas.before:
-                    #                     #     Color:
-                    #                     #         rgba: (0.5,0.5,0.5,1)
-                    #                     #     Rectangle:
-                    #                     #         size: self.size
-                    #                     #         pos: self.pos
-                    #                 TextInput:
-                    #                     disabled: True
-                    #                     size_hint_x: .6
-                    #                     hint_text: '$'
-                    #             BoxLayout:
-                    #                 orientation: 'horizontal'
-                    #                 spacing: 20
-                    #                 size_hint_y: None
-                    #                 height: 45
-                    #                 Label:
-                    #                     text: ''
-                    #                     size_hint_x: .6
-                    #                 Button:
-                    #                     text: 'Continue'
-                    #                     size_hint_x: .4
-                    #             Label:
-                    #                 text: ''
                     
         BoxLayout:
             id: status_bar
@@ -769,7 +619,7 @@
                 height: 30
             Label:
                 id: current_customer_status_bar
-                text: 'Customer name '
+                text: ''
                 size_hint: (.25, None)
                 height: 30
                 bold: True

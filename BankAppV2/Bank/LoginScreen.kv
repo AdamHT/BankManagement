@@ -42,16 +42,18 @@
                 write_tab: False
                 hint_text: "Password"
         Label:
-            id: sp
+            id: loginStatus
             size_hint_y: None
             height: 40
+            color: 1,0,0,1
+            font_size: 20
         Button:
             text: "Sign In"
             size_hint_y: None
             height: 40
             #on_release: root.verify_credentials()
-            on_press: root.login()
-            on_release: root.reset()
+            on_release: root.login()
+            #on_release: root.reset()
             background_color: (0,.5,.5,1)
 
         Label:

@@ -41,20 +41,28 @@ class LoginScreen(Screen):
         userID = self.ids["username"].text
         password = self.ids["password"].text
         r = sess.post('https://localhost/token_login/',data={'username': userID, 'password': password}, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
-        print(r)
-        json_response = json.loads(r.text)
-        App.get_running_app().token = json_response['token']
+        
+        if r.status_code == 404 or r.status_code == 400:
+            self.ids.loginStatus.text = "Incorrect Credentials"
+        else:
+            self.ids.loginStatus.text = ""
+            json_response = json.loads(r.text)
+            self.ids.loginStatus.text = str(json_response)
+            App.get_running_app().token = json_response['token']
 
-        loggedin = True
+            loggedin = True
 
-        if json_response['usertype'] == 2:
-            app.root.current = 'teller_screen'
-        elif json_response['usertype'] == 1:
-            app.root.current = 'admin_screen'
+            if json_response['usertype'] == 2:
+                app.root.current = 'teller_screen'
+            elif json_response['usertype'] == 1:
+                app.root.current = 'admin_screen'
+            
+            self.reset()
 
     def reset(self):
         self.ids["username"].text = ""
         self.ids["password"].text = ""
+        self.ids.loginStatus.text = ""
     pass
 
 class AdminScreen(Screen):
@@ -70,6 +78,7 @@ class AdminScreen(Screen):
     def change_screen(self, instance):
         #app = App.get_running_app()
         self.ids.screen_manager.transition = NoTransition()
+        
         if instance.text == 'Create Account':
             if self.ids.screen_manager.current == 'add_user_screen' or self.ids.screen_manager.current == 'add_account_screen':
                 pass
@@ -83,6 +92,7 @@ class AdminScreen(Screen):
     def SetCurrentCustomer(self):
         if self.check_is_integer(self.ids.lookup_customer.text) == 0 or self.check_account_length(self.ids.lookup_customer.text) == 0:
             self.SetStatus("Enter valid SSN", 'Error')
+            self.ids.customerName.text = "Enter valid SSN"
             self.activeCustomer = False
             return
         else:
@@ -90,7 +100,6 @@ class AdminScreen(Screen):
             self.SetStatus("User account found!", 'Valid')
             App.get_running_app().adminCustomer = CurrentAdminCustomer()
             App.get_running_app().adminCustomer.ssn = self.ids.lookup_customer.text
-            print("SSN: " + App.get_running_app().adminCustomer.ssn)
 
     def SetStatus(self, status, statustype):
         self.ids.status_text.text = status
@@ -122,7 +131,7 @@ class AdminScreen(Screen):
         App.get_running_app().adminCustomer.first_name = y['acct_infoToBePrinted']['first_name']
         App.get_running_app().adminCustomer.last_name = y['acct_infoToBePrinted']['last_name']
         #fetched_acct_teller_details = str(y['acct_infoToBePrinted']['acct_number']) + " - " + y['acct_infoToBePrinted']['acct_type']
-        admin_dropdown = str(y['acct_infoToBePrinted']['acct_number']) + " - " + y['acct_infoToBePrinted']['acct_type']
+        self.admin_dropdown = str(y['acct_infoToBePrinted']['acct_number']) + " - " + y['acct_infoToBePrinted']['acct_type']
         #return fetched_acct_teller_details
 
     def GetSelectedAccountInfo(self, acct_number):
@@ -141,8 +150,8 @@ class AdminScreen(Screen):
 
         y = json.loads(r.text)
         self.account_type = y['acct_infoToBePrinted']['acct_type']
-        self.account_balance = y['acct_infoToBePrinted']['acct_balance']
-        self.account_interest = y['acct_infoToBePrinted']['acct_interest']
+        self.account_balance = str(y['acct_infoToBePrinted']['acct_balance'])
+        self.account_interest = str(y['acct_infoToBePrinted']['acct_interest'])
 
     def OnSpinnerSelect(self, text):
         accountNum = self.ids.userAccounts.text.split(' ')[0]
@@ -151,6 +160,13 @@ class AdminScreen(Screen):
         self.ids.accountType.text = self.account_type
         self.ids.accountBalance.text = self.account_balance
         self.ids.accountInterest.text = self.account_interest
+
+    def ResetAccountInfo(self):
+        self.ids.accountType.text = ""
+        self.ids.accountBalance.text = ""
+        self.ids.accountNumber.text = ""
+        self.ids.accountInterest.text = ""
+        self.ids.userAccounts.text = "Click To Select Account"
 
     def SearchCustomer(self):
         if self.activeCustomer == False:
@@ -173,16 +189,16 @@ class AdminScreen(Screen):
             accounts = []
             if test['acct_numbers'] == "Account Number Not Located, Account Does Not Exist!":
                 self.SetStatus("Account Not Found", "ERROR")
+                self.ids.customerName.text = "Account Not Found"
             else:
                 if test['acct_numbers'] == "" or test['acct_numbers'] == []:
                     self.SetStatus("No Accounts Found", "Error")
+                    self.ids.customerName.text = "No Accounts Found"
                     return
                 for acct_number in test['acct_numbers']:
-                    print("ACCNT: " + acct_number)
                     self.GetAccountInfo(acct_number)
                     accounts.append(self.admin_dropdown)
                 #print("LENGTH: " + len(accounts))
-                print("heeloooo?")
                 self.ids.userAccounts.values = accounts
 
                 self.SetStatusCustomerName(App.get_running_app().adminCustomer.first_name, App.get_running_app().adminCustomer.last_name)
@@ -194,7 +210,7 @@ class AdminScreen(Screen):
         token = App.get_running_app().token
         sess = App.get_running_app().sess
         dDict = {  # must use dictionary, is requirement of the request library
-					"ss_number": App.get_running_app.adminCustomer.ssn,
+					"ss_number": App.get_running_app().adminCustomer.ssn,
 				}
         hDict = {
 					"Authorization": "Token " + token
@@ -202,14 +218,19 @@ class AdminScreen(Screen):
         r = sess.post('https://localhost/delete_User/', data=dDict, headers=hDict,verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
         test = json.loads(r.text)
-        print(test['acct_infoToBePrinted'])
+        self.SetStatus("User Removed", "Valid")
+        #print(test['acct_infoToBePrinted'])
+        self.ResetUserScreen()
+        App.get_running_app().adminCustomer = CurrentAdminCustomer()
+
 
     def RemoveAccount(self):
-        if self.CheckIfDropDownIsSelected(self.admin_dropdown) == 0:
+        if self.activeCustomer == False or self.CheckIfDropDownIsSelected(self.admin_dropdown) == 0:
+            self.SetStatus("No Account Selected", "Error")
             return
         token = App.get_running_app().token
         sess = App.get_running_app().sess
-        acct_number = self.admin_dropdown.split(' ')[0]
+        acct_number = self.ids.userAccounts.text.split(' ')[0]
         dDict = {  # must use dictionary, is requirement of the request library
 					"acct_number": acct_number,
 				}
@@ -219,6 +240,30 @@ class AdminScreen(Screen):
         r = sess.post('https://localhost/delete_customerAcct/', data=dDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
         test = json.loads(r.text)
+        self.SetStatus("Account Removed", "Valid")
+        self.ResetUserAccountDetails()
+        #self.ResetUserScreen()
+        self.SearchCustomer()
+
+    def AddInterest(self):
+        if self.activeCustomer == False or self.CheckIfDropDownIsSelected(self.admin_dropdown) == 0:
+            self.SetStatus("No Account Selected", "Error")
+            return
+        token = App.get_running_app().token
+        sess = App.get_running_app().sess
+        acct_number = self.ids.userAccounts.text.split(' ')[0]
+        dDict = {  # must use dictionary, is requirement of the request library
+					"acct_number": acct_number,
+				}
+        hDict = {
+					"Authorization": "Token " + token
+				}
+        r = sess.post('https://localhost/apply_Interest/', data=dDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
+
+        test = json.loads(r.text)
+        self.SetStatus(test['acct_infoToBePrinted'], "Valid")
+        self.ResetUserAccountDetails()
+        self.SearchCustomer()
 
     def CheckIfDropDownIsSelected(self, dropdown):
         if dropdown == "Select Account" or dropdown == "Click To Select Account":
@@ -316,7 +361,7 @@ class AdminScreen(Screen):
             self.SetStatus("Enter Valid Phone Number", "Error")
             return 0
         #Account Type
-        elif self.ids.accountType.text == "Select Account":
+        elif self.ids.accountTypeDropdown.text == "Select Account":
             self.SetStatus("Select An Account Type", "Error")
             return 0
         #SSN
@@ -338,14 +383,13 @@ class AdminScreen(Screen):
 
         if self.CheckNewUserDetails() == 0:
             return
-        
 
         token = App.get_running_app().token
         sess = App.get_running_app().sess
-        if(self.ids.accountType.text == 'Teller'):
+        if self.ids.accountTypeDropdown.text == 'Teller':
             isAdmin = False
             isTeller = True
-        elif self.ids.accountType.text == 'Admin':
+        elif self.ids.accountTypeDropdown.text == 'Admin':
             isAdmin = True
             isTeller = False
 
@@ -383,16 +427,16 @@ class AdminScreen(Screen):
         r = sess.post('https://localhost/create_acct/', data = cDict, headers = hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
         #self.SetCurrentCustomer()
+        self.ids.lookup_customer.text = ssn
         self.SetSSNAfterCreation()
         self.ClearDetails()
-        self.SetStatus("New Customer Added", "Error")
+        self.SetStatus("New Customer Added", "Valid")
         self.ids.screen_manager.current = 'add_account_screen'
 
     def SetSSNAfterCreation(self):
         App.get_running_app().adminCustomer = CurrentAdminCustomer()
         App.get_running_app().adminCustomer.ssn = self.ids.ssn.text
-        print("ssn after create: " + App.get_running_app().adminCustomer.ssn)
-        self.adminCustomer = True
+        #self.adminCustomer = True
 
     def AddAccount(self):
 
@@ -402,6 +446,8 @@ class AdminScreen(Screen):
             print(App.get_running_app().adminCustomer.ssn)
             pass
         print("ssn lookup: " + App.get_running_app().adminCustomer.ssn)
+        if self.ids.newAccountType.text == "Select Account":
+            self.SetStatus
         acct_number = random.randint(0, 999999999)
         caDict = {
                 "ss_number" : App.get_running_app().adminCustomer.ssn,
@@ -413,9 +459,14 @@ class AdminScreen(Screen):
             "Authorization": "Token " + token
         }
         r = sess.post('https://localhost/create_customerAcct/', data=caDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
-        #self.ids.current_customer_status_bar = self.ids.newAccountType.text
-        self.SetStatus(self.ids.newAccountType.text + " account added!", "Valid")
+        #If error message:
+        #   update status
+        #else:
+        test = json.loads(r.text)
+        self.SetStatus(test['acct_infoToBePrinted'], "Valid")
         self.ResetAddAccountScreen()
+
+    #def AddAccountPageFinish(self):
 
 
     def ClearDetails(self):
@@ -433,7 +484,23 @@ class AdminScreen(Screen):
         self.ids['newPassword'].text = ""
 
     def ResetUserScreen(self):
-        pass
+        self.ids.accountType.text = ""
+        self.ids.accountNumber.text = ""
+        self.ids.accountBalance.text = ""
+        self.ids.accountInterest.text = ""
+        self.ids.userAccounts.text = "Click To Select Account"
+        self.ids.userAccounts.values = []
+        self.ids.customerName.text = ""
+        self.ids.lookup_customer.text = ""
+        self.SetStatusCustomerName("", "")
+
+    def ResetUserAccountDetails(self):
+        self.ids.accountType.text = ""
+        self.ids.accountNumber.text = ""
+        self.ids.accountBalance.text = ""
+        self.ids.accountInterest.text = ""
+        self.ids.userAccounts.values = []
+        self.ids.userAccounts.text = "Click To Select Account"
 
     def ResetAddAccountScreen(self):
         self.ids.newAccountType.text = "Select Account"
@@ -442,6 +509,9 @@ class AdminScreen(Screen):
     def logout(self):
         app = App.get_running_app()
         app.root.transition = NoTransition()
+        #self.ids.screen_manager.current == 'add_user_screen'
+        #self.ids.user_toggle.state = 'down'
+        #self.ids.add_account_toggle = 'normal'
         app.root.current = 'login_screen'
         self.ResetScreen()
 
@@ -473,6 +543,7 @@ class TellerScreen(Screen):
     acountBalance = ""
     accountNumber = ""
     accountInterest = ""
+    accountsDropdown = ""
     def SetCurrentCustomer(self):
         if self.check_is_integer(self.ids.lookup_ti.text) == 0 or self.check_account_length(self.ids.lookup_ti.text) == 0:
             self.UpdateStatusBar("Enter valid SSN", 'Error')
@@ -519,30 +590,37 @@ class TellerScreen(Screen):
 
         fetched_acct_teller_details = str(y['acct_infoToBePrinted']['acct_number']) + " - " + y['acct_infoToBePrinted']['acct_type'] + " $" + str(y['acct_infoToBePrinted']['acct_balance'])
 
+
+        App.get_running_app().tellerCustomer.first_name = y['acct_infoToBePrinted']['first_name']
+        App.get_running_app().tellerCustomer.last_name = y['acct_infoToBePrinted']['last_name']
         accountNumber = str(y['acct_infoToBePrinted']['acct_number'])
         accountType = y['acct_infoToBePrinted']['acct_type']
         accountBalance = str(y['acct_infoToBePrinted']['acct_balance'])
         accountInterest = str(y['acct_infoToBePrinted']['acct_interest'])
+        self.accountsDropdown = str(y['acct_infoToBePrinted']['acct_number']) + " - " + y['acct_infoToBePrinted']['acct_type'] + " $" + str(y['acct_infoToBePrinted']['acct_balance'])
 
         return fetched_acct_teller_details
 
         #print('Account Type:', y['acct_infoToBePrinted']['acct_type'])
+
 
     def Transfer(self):
         if self.CheckIfDropDownIsSelected(self.ids.transferFromSpinner.text) == 0:
             return
         if self.CheckIfDropDownIsSelected(self.ids.transferToSpinner.text) == 0:
             return
+
         token = App.get_running_app().token
         sess = App.get_running_app().sess
+
         chosenAccount1 = self.ids.transferFromSpinner.text.split(' ')[0]
         chosenAccount2 = self.ids.transferToSpinner.text.split(' ')[0]
-        print('account from: ' + chosenAccount1)
-        print('account to: ' + chosenAccount2)
         amount = self.ids.transferAmount.text
+
         if self.CheckAmount(amount) == 0:
             self.UpdateStatusBar("Enter Valid Amount", "Error")
             return
+
         tDict = {  # must use dictionary, is requirement of the request library
 					"to_acct_number": int(chosenAccount2),
 					"from_acct_number": int(chosenAccount1),
@@ -554,10 +632,14 @@ class TellerScreen(Screen):
 				}
         r = sess.post('https://localhost/transfer_customerAcct/', data=tDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
 
+        test = json.loads(r.text)
+        self.UpdateStatusBar(test['acct_infoToBePrinted'], "Valid")
         self.resetPages()
         self.SearchCustomer()
 
     def Deposit(self):
+        if self.CheckIfDropDownIsSelected(self.ids.depositSpinner.text) == 0:
+            return
         token = App.get_running_app().token
         sess = App.get_running_app().sess
 
@@ -576,11 +658,14 @@ class TellerScreen(Screen):
 					"Authorization": "Token " + token
 				}
         r = sess.post('https://localhost/deposit_customerAcct/', data=aDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
-
+        test = json.loads(r.text)
+        self.UpdateStatusBar(test['acct_infoToBePrinted'], "Valid")
         self.resetPages()
         self.SearchCustomer()
 
     def Withdrawal(self):
+        if self.CheckIfDropDownIsSelected(self.ids.WithdrawalSpinner.text) == 0:
+            return
         token = App.get_running_app().token
         sess = App.get_running_app().sess
         chosenAccount1 = self.ids.withdrawalSpinner.text.split(' ')[0]
@@ -597,11 +682,16 @@ class TellerScreen(Screen):
 					"Authorization": "Token " + token
 				}
         r = sess.post('https://localhost/withdrawl_customerAcct/', data=aDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
-
+        test = json.loads(r.text)
+        self.UpdateStatusBar(test['acct_infoToBePrinted'], "Valid")
         self.resetPages()
         self.SearchCustomer()
 
     def Payments(self):
+        if self.CheckIfDropDownIsSelected(self.ids.paymentsFromSpinner.text) == 0:
+            return
+        if self.CheckIfDropDownIsSelected(self.ids.paymentsToSpinner.text) == 0:
+            return
         token = App.get_running_app().token
         sess = App.get_running_app().sess
         chosenAccount1 = self.ids.paymentsFromSpinner.text.split(' ')[0]
@@ -621,12 +711,17 @@ class TellerScreen(Screen):
 					"Authorization": "Token " + token
 				}
         r = sess.post('https://localhost/transfer_customerAcct/', data=tDict, headers=hDict, verify="C:/Users/Adam PC/Desktop/Apache24/certs/Ursus.crt")
-
+        test = json.loads(r.text)
+        self.UpdateStatusBar(test['acct_infoToBePrinted'], "Valid")
         self.resetPages()
         self.SearchCustomer()
 
     def resetPages(self):
         self.ids.lookup_ti.text = ""
+
+        self.ids.paymentsFromSpinner.text = "Select Account"
+        self.ids.paymentsToSpinner.text = "Select Account"
+        self.ids.paymentsAmount.text = ""
 
         self.ids.transferFromSpinner.text = "Select Account"
         self.ids.transferToSpinner.text = "Select Account"
@@ -699,11 +794,12 @@ class TellerScreen(Screen):
                     self.ids.lookupStatus.text = "No Accounts Found For User"
                     return
                 for acct_number in test['acct_numbers']:
-                    if self.parse_account_info_teller(acct_number).upper().find("REGULAR CHECKING") != -1 or self.parse_account_info_teller(acct_number).upper().find("SAVINGS") != -1:
-                        self.parse_account_info_teller(acct_number)
-                        accounts.append(self.admin_dropdown)
+                    self.parse_account_info_teller(acct_number)
+                    if self.accountsDropdown.upper().find("REGULAR CHECKING") != -1 or self.parse_account_info_teller(acct_number).upper().find("SAVINGS") != -1 or self.parse_account_info_teller(acct_number).upper().find("MONEY MARKET") != -1:
+                        
+                        accounts.append(self.accountsDropdown)
                     else:
-                        paymentAccounts.append(self.parse_account_info_teller(acct_number))
+                        paymentAccounts.append(self.accountsDropdown)
                 self.ids.lookupStatus.text = "User Account Found"
                 self.ids.transferFromSpinner.values = accounts
                 self.ids.transferToSpinner.values = accounts
@@ -761,27 +857,3 @@ class BankApp(App):
 
 if __name__ == '__main__':
     BankApp().run()
-
-
-#####################################
-# print("\tPlease enter SSN or Username to remove")
-# 				ss_number = input() <----- this is for the SSN field in your search in teller menu
-                # after the ssn is input, when you hit the search button or whatever the fuck
-                # you'll then use the below to send that information off to the view, and it will return
-                # the account number(s) associated with that SSN
-
-# 				dDict = {  # must use dictionary, is requirement of the request library
-# 					"ss_number": ss_number,
-# 				}
-# 				hDict = {
-# 					"Authorization": "Token " + token
-# 				}
-# 				r = sess.post('https://localhost/delete_User/', data=dDict, headers=hDict,verify="C:/Users/Justin/Desktop/Apache24/Apache24/certs/Ursus.crt")
-
-# 				test = json.loads(r.text)
-# 				print(test['acct_infoToBePrinted'])
-                # after this you'll have a list of the account numbers associated with the SSN you used
-                # to search. now run the for loop below to loop through and give you the details you need
-                # for the teller menu dropdowns
-                #for acct_number in test['acct_numbers']:
-				#	parse_account_info_teller(acct_number)
